@@ -93,10 +93,20 @@
   .equip-slot .slot-item { color: #e0c080; font-size: 10px; }
 
   /* Карта */
-  #mapArea {
-    background: #0d0d0d; border: 1px solid #5c1a1a; padding: 10px;
-    border-radius: 4px; margin-bottom: 8px;
-  }
+ #mapArea {
+  background: #0d0d0d url('img/bg_forest.png') center/cover no-repeat;
+  border: 1px solid #5c1a1a; padding: 10px;
+  border-radius: 4px; margin-bottom: 8px;
+  position: relative;
+}
+#mapArea::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  border-radius: 4px;
+  z-index: 0;
+}
+#mapArea * { position: relative; z-index: 1; }
   #mapArea h3 { color: #c44; margin-bottom: 6px; font-size: 13px; }
   #nodeList {
     display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
@@ -178,6 +188,23 @@
   .dmg-flash { color: #ff5555; }
   .heal-flash { color: #55cc55; }
 </style>
+ <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAIbLFExee5KhkOITgeJyJrzi62akz5HxE",
+    authDomain: "rpg-game-a59b5.firebaseapp.com",
+    projectId: "rpg-game-a59b5",
+    storageBucket: "rpg-game-a59b5.firebasestorage.app",
+    messagingSenderId: "94355006065",
+    appId: "1:94355006065:web:4b46b78fc8a4c0991fb1d0"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
 </head>
 <body>
 
@@ -235,6 +262,25 @@
   <span>💰 Золото <b id="gold">0</b></span>
 </div>
 
+<!-- Аккаунт -->
+<div id="authBar" style="display:flex;gap:6px;margin-bottom:8px;">
+  <button class="btn" id="btnLogin" onclick="showLogin()" style="flex:1;font-size:11px;">🔑 Войти</button>
+  <button class="btn" id="btnRegister" onclick="showRegister()" style="flex:1;font-size:11px;">📝 Регистрация</button>
+  <button class="btn danger" id="btnLogout" onclick="logout()" style="flex:1;font-size:11px;display:none;">🚪 Выйти</button>
+</div>
+<div id="authMsg" style="text-align:center;font-size:11px;color:#a08060;margin-bottom:4px;"></div>
+
+<!-- Окно входа/регистрации -->
+<div id="authModal" class="modal">
+  <h2 id="authTitle">Вход</h2>
+  <input id="authEmail" type="email" placeholder="Email" style="width:100%;padding:10px;margin:6px 0;background:#1a1a1a;color:#e0c080;border:1px solid #5c1a1a;">
+  <input id="authPass" type="password" placeholder="Пароль" style="width:100%;padding:10px;margin:6px 0;background:#1a1a1a;color:#e0c080;border:1px solid #5c1a1a;">
+  <input id="authPass2" type="password" placeholder="Повтори пароль" style="width:100%;padding:10px;margin:6px 0;background:#1a1a1a;color:#e0c080;border:1px solid #5c1a1a;display:none;">
+  <p id="authError" style="color:#c66;font-size:11px;display:none;"></p>
+  <button class="btn" id="authSubmit" onclick="handleAuth()">Войти</button>
+  <button class="modal-close" onclick="closeAuthModal()">ОТМЕНА</button>
+</div>
+
 <div id="equipBar">
   <div class="equip-slot" onclick="unequip('head')"><div class="slot-label">ГОЛОВА</div><div class="slot-item" id="eqHead">-</div></div>
   <div class="equip-slot" onclick="unequip('chest')"><div class="slot-label">ТОРС</div><div class="slot-item" id="eqChest">-</div></div>
@@ -251,6 +297,16 @@
 </div>
 
 <div id="log"></div>
+
+<!-- Чат -->
+<div id="chatArea" style="display:none;margin-top:8px;">
+  <div style="color:#c44;font-size:13px;margin-bottom:4px;">💬 Чат</div>
+  <div id="chatMessages" style="background:#0d0d0d;border:1px solid #5c1a1a;height:120px;overflow-y:auto;padding:8px;border-radius:4px;font-size:11px;margin-bottom:4px;"></div>
+  <div style="display:flex;gap:4px;">
+    <input id="chatInput" type="text" placeholder="Сообщение..." style="flex:1;padding:8px;background:#1a1a1a;color:#e0c080;border:1px solid #5c1a1a;">
+    <button class="btn" onclick="sendMessage()" style="width:60px;">➤</button>
+  </div>
+</div>
 
 <!-- Боевой экран -->
 <div id="battleScreen">
@@ -803,6 +859,120 @@ renderNodes();
 updateUI();
 addLog("🏕️ Лагерь. Начинай фарм: нажимай на соседние узлы.");
 addLog("💡 Совет: враги ходят по очерёдности (скорость). Защита снижает урон вдвое.");
+// ==================== АККАУНТ ====================
+let currentUser = null;
+let authMode = 'login';
+
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  if (user) {
+    document.getElementById('btnLogin').style.display = 'none';
+    document.getElementById('btnRegister').style.display = 'none';
+    document.getElementById('btnLogout').style.display = 'block';
+    document.getElementById('authMsg').innerText = '👤 ' + user.email;
+    document.getElementById('chatArea').style.display = 'block';
+    loadChat();
+  } else {
+    document.getElementById('btnLogin').style.display = 'block';
+    document.getElementById('btnRegister').style.display = 'block';
+    document.getElementById('btnLogout').style.display = 'none';
+    document.getElementById('authMsg').innerText = '';
+    document.getElementById('chatArea').style.display = 'none';
+  }
+});
+
+function showLogin() {
+  authMode = 'login';
+  document.getElementById('authTitle').innerText = 'Вход';
+  document.getElementById('authPass2').style.display = 'none';
+  document.getElementById('authSubmit').innerText = 'Войти';
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('authModal').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+
+function showRegister() {
+  authMode = 'register';
+  document.getElementById('authTitle').innerText = 'Регистрация';
+  document.getElementById('authPass2').style.display = 'block';
+  document.getElementById('authSubmit').innerText = 'Создать аккаунт';
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('authModal').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+
+function handleAuth() {
+  let email = document.getElementById('authEmail').value.trim();
+  let pass = document.getElementById('authPass').value;
+  let pass2 = document.getElementById('authPass2').value;
+  let errEl = document.getElementById('authError');
+
+  if (!email || !pass) {
+    errEl.innerText = 'Заполни все поля';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  if (authMode === 'register') {
+    if (pass !== pass2) {
+      errEl.innerText = 'Пароли не совпадают';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (pass.length < 6) {
+      errEl.innerText = 'Пароль минимум 6 символов';
+      errEl.style.display = 'block';
+      return;
+    }
+    auth.createUserWithEmailAndPassword(email, pass)
+      .then(() => closeAuthModal())
+      .catch(e => { errEl.innerText = e.message; errEl.style.display = 'block'; });
+  } else {
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(() => closeAuthModal())
+      .catch(e => { errEl.innerText = e.message; errEl.style.display = 'block'; });
+  }
+}
+
+function logout() {
+  auth.signOut();
+}
+
+function closeAuthModal() {
+  document.getElementById('authModal').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('authEmail').value = '';
+  document.getElementById('authPass').value = '';
+  document.getElementById('authPass2').value = '';
+}
+
+// ==================== ЧАТ ====================
+function sendMessage() {
+  if (!currentUser) return;
+  let input = document.getElementById('chatInput');
+  let text = input.value.trim();
+  if (!text) return;
+  db.collection('chat').add({
+    email: currentUser.email,
+    text: text,
+    time: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  input.value = '';
+}
+
+function loadChat() {
+  db.collection('chat').orderBy('time', 'asc').limit(50)
+    .onSnapshot(snapshot => {
+      let html = '';
+      snapshot.forEach(doc => {
+        let d = doc.data();
+        html += `<p><b>${d.email.split('@')[0]}:</b> ${d.text}</p>`;
+      });
+      let el = document.getElementById('chatMessages');
+      el.innerHTML = html;
+      el.scrollTop = el.scrollHeight;
+    });
+}
 </script>
 </body>
 </html>
