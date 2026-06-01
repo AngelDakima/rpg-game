@@ -298,6 +298,14 @@
 
 <div id="log"></div>
 
+<!-- Игроки онлайн -->
+<div id="onlineArea" style="display:none;margin-top:8px;">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+    <span style="color:#5c5;font-size:10px;">🟢</span>
+    <span style="color:#a08060;font-size:11px;">Онлайн: <b id="onlineCount" style="color:#e0c080;">0</b></span>
+  </div>
+</div>
+
 <!-- Чат -->
 <div id="chatArea" style="display:none;margin-top:8px;">
   <div style="color:#c44;font-size:13px;margin-bottom:4px;">💬 Чат</div>
@@ -866,11 +874,13 @@ let authMode = 'login';
 auth.onAuthStateChanged(user => {
   currentUser = user;
   if (user) {
+    updateOnlineStatus(user);
     document.getElementById('btnLogin').style.display = 'none';
     document.getElementById('btnRegister').style.display = 'none';
     document.getElementById('btnLogout').style.display = 'block';
     document.getElementById('authMsg').innerText = '👤 ' + user.email;
     document.getElementById('chatArea').style.display = 'block';
+    document.getElementById('onlineArea').style.display = 'block';
     loadChat();
   } else {
     document.getElementById('btnLogin').style.display = 'block';
@@ -878,9 +888,9 @@ auth.onAuthStateChanged(user => {
     document.getElementById('btnLogout').style.display = 'none';
     document.getElementById('authMsg').innerText = '';
     document.getElementById('chatArea').style.display = 'none';
+    document.getElementById('onlineArea').style.display = 'none';
   }
 });
-
 function showLogin() {
   authMode = 'login';
   document.getElementById('authTitle').innerText = 'Вход';
@@ -933,6 +943,29 @@ function handleAuth() {
       .catch(e => { errEl.innerText = e.message; errEl.style.display = 'block'; });
   }
 }
+
+function updateOnlineStatus(user) {
+  let userRef = db.collection('online').doc(user.uid);
+  userRef.set({
+    email: user.email,
+    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  window.addEventListener('beforeunload', () => {
+    userRef.delete();
+  });
+}
+
+// Слушаем онлайн-игроков
+db.collection('online').onSnapshot(snapshot => {
+  document.getElementById('onlineCount').innerText = snapshot.size;
+});
+
+// Удаляем отключившихся (старше 30 секунд)
+setInterval(() => {
+  let cutoff = new Date(Date.now() - 30000);
+  db.collection('online').where('lastSeen', '<', cutoff).get()
+    .then(snap => snap.forEach(doc => doc.ref.delete()));
+}, 15000);
 
 function logout() {
   auth.signOut();
