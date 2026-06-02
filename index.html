@@ -3,1009 +3,643 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Hardcore Grind RPG</title>
+<title>Азгрант</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: #1a1a1a;
-    color: #e0c080;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    max-width: 500px;
-    margin: 0 auto;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* Верхняя панель */
-  #topbar {
-    display: flex;
-    align-items: center;
-    background: #111;
-    border-bottom: 2px solid #5c1a1a;
-    padding: 10px 12px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  #menuBtn {
-    font-size: 22px;
-    cursor: pointer;
-    margin-right: 12px;
-    color: #e0c080;
-    background: none;
-    border: none;
-    padding: 4px 8px;
-  }
-  #topbar h1 {
-    font-size: 15px;
-    letter-spacing: 2px;
-    color: #c44;
-    text-transform: uppercase;
-  }
-
-  /* Оверлей */
-  #overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.75); z-index: 99; display: none;
-  }
-  #overlay.show { display: block; }
-
-  /* Боковое меню */
-  #sideMenu {
-    position: fixed; top: 0; left: -260px; width: 240px; height: 100%;
-    background: #0d0d0d; border-right: 2px solid #5c1a1a; z-index: 100;
-    transition: left 0.3s; padding: 20px 15px; overflow-y: auto;
-  }
-  #sideMenu.open { left: 0; }
-  #sideMenu h3 { color: #c44; margin-bottom: 15px; text-align: center; }
-  .menu-item {
-    display: block; width: 100%; padding: 12px; margin: 4px 0;
-    background: #1a1a1a; color: #e0c080; border: 1px solid #5c1a1a;
-    text-align: left; font-family: inherit; font-size: 13px;
-    cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-  }
-  .menu-item:active { background: #2a1a1a; }
-
-  /* Основной контент */
-  #mainContent { padding: 10px; }
-
-  /* Статы */
-  #statsBar {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 4px;
-    background: #0d0d0d; padding: 8px; border: 1px solid #5c1a1a;
-    border-radius: 4px; margin-bottom: 8px; font-size: 11px;
-  }
-  #statsBar span { color: #a08060; }
-  #statsBar b { color: #e0c080; }
-
-  /* Слоты экипировки */
-  #equipBar {
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
-    margin-bottom: 8px;
-  }
-  .equip-slot {
-    background: #0d0d0d; border: 1px solid #5c1a1a; padding: 6px 3px;
-    text-align: center; font-size: 10px; border-radius: 3px; min-height: 40px;
-    cursor: pointer;
-  }
-  .equip-slot .slot-label { color: #a08060; font-size: 9px; }
-  .equip-slot .slot-item { color: #e0c080; font-size: 10px; }
-
-  /* Карта */
- #mapArea {
-  background: #0d0d0d url('img/bg_forest.png') center/cover no-repeat;
-  border: 1px solid #5c1a1a; padding: 10px;
-  border-radius: 4px; margin-bottom: 8px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #fefefe; color: #111;
+  font-family: 'Segoe UI', Arial, sans-serif; font-weight: 300; font-size: 14px;
+  max-width: 500px; margin: 0 auto; min-height: 100vh;
+  border-left: 2px solid #e8e0d5; border-right: 2px solid #e8e0d5;
+  box-shadow: 0 0 30px rgba(0,0,0,0.05);
   position: relative;
 }
-#mapArea::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.6);
-  border-radius: 4px;
-  z-index: 0;
+
+#topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px; background: linear-gradient(180deg, #fefefe 0%, #faf7f2 100%);
+  border-bottom: 2px solid #e0d8cc; position: sticky; top: 0; z-index: 10;
 }
-#mapArea * { position: relative; z-index: 1; }
-  #mapArea h3 { color: #c44; margin-bottom: 6px; font-size: 13px; }
-  #nodeList {
-    display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
-  }
-  .node {
-    width: 42px; height: 42px; background: #1a1a1a; border: 1px solid #5c1a1a;
-    color: #a08060; font-size: 10px; cursor: pointer; border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .node.current { border-color: #c44; color: #e0c080; background: #2a1a1a; }
-  .node.done { background: #1a2a1a; border-color: #3a5a3a; color: #6a8a6a; cursor: default; }
+#menuBtn { font-size: 22px; background: none; border: none; cursor: pointer; color: #111; padding: 4px 8px; border-radius: 6px; }
+#menuBtn:active { background: #f0e8d8; }
+#gameTitle { font-size: 17px; font-weight: 400; letter-spacing: 3px; color: #222; }
+#topIcons { display: flex; gap: 8px; }
+.top-icon {
+  background: #faf7f2; border: 1px solid #d5cbb8; padding: 7px 10px;
+  font-size: 12px; cursor: pointer; border-radius: 8px; color: #111;
+  transition: all 0.2s; font-weight: 400;
+}
+.top-icon:active { background: #ede4d4; transform: scale(0.95); }
 
-  /* Лог */
-  #log {
-    border: 1px solid #5c1a1a; padding: 10px; height: 200px; overflow-y: auto;
-    margin-bottom: 8px; background: #0d0d0d; border-radius: 4px;
-    font-size: 12px; line-height: 1.5;
-  }
+#sideMenu {
+  position: fixed; top: 0; left: -280px; width: 270px; height: 100%;
+  background: #fefefe; border-right: 2px solid #e0d8cc; z-index: 100;
+  transition: left 0.3s; padding: 20px 15px; overflow-y: auto;
+  display: flex; flex-direction: column; box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+}
+#sideMenu.open { left: 0; }
+#overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.25); z-index: 99; display: none;
+}
+#overlay.show { display: block; }
+.menu-profile { text-align: center; margin-bottom: 18px; padding: 12px; background: #faf7f2; border-radius: 12px; }
+.menu-profile .nick { font-size: 17px; font-weight: 400; color: #222; }
+.menu-profile .class-lvl { font-size: 12px; color: #888; margin-top: 2px; }
+.menu-item {
+  display: block; width: 100%; padding: 11px 14px; margin: 3px 0;
+  background: #faf7f2; border: 1px solid #e0d8cc; color: #111;
+  text-align: left; font-size: 13px; cursor: pointer; border-radius: 8px;
+  transition: all 0.15s;
+}
+.menu-item:active { background: #ede4d4; transform: translateX(3px); }
+.menu-online { margin-top: auto; text-align: center; font-size: 12px; color: #666; padding: 14px 0; }
+.menu-online b { color: #4a8; }
 
-  /* Кнопки */
-  .btn {
-    display: block; width: 100%; padding: 12px; margin: 4px 0;
-    background: #1a1a1a; color: #e0c080; border: 1px solid #5c1a1a;
-    border-radius: 4px; font-size: 13px; font-family: inherit;
-    cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-  }
-  .btn:active { background: #2a1a1a; }
-  .btn.danger { border-color: #8a3a3a; color: #c66; }
-  .btn.heal { border-color: #3a6a3a; color: #6a6; }
+#mainContent { padding: 14px; }
+#locName { font-size: 20px; font-weight: 400; text-align: center; margin: 12px 0 4px; letter-spacing: 1px; }
+#locDesc { text-align: center; color: #666; font-size: 13px; margin-bottom: 8px; line-height: 1.6; font-style: italic; }
 
-  /* Боевой экран */
-  #battleScreen {
-    display: none; background: #0d0d0d; border: 2px solid #c44; padding: 12px;
-    border-radius: 6px; margin-bottom: 8px;
-  }
-  #battleScreen.active { display: block; }
-  .hp-bar-outer {
-    background: #333; height: 14px; border-radius: 3px; margin: 4px 0; overflow: hidden;
-  }
-  .hp-bar-inner { background: #c44; height: 100%; width: 100%; transition: width 0.3s; }
-  .enemy-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
-  .enemy-icon { font-size: 28px; }
+#playersHere {
+  margin: 8px 0; padding: 10px; background: #faf7f2; border-radius: 10px;
+  border: 1px solid #e8e0d5; font-size: 12px; color: #555;
+}
+#playersHere b { color: #4a8; }
+#playersHere .player-nick {
+  display: inline-block; background: #ede4d4; padding: 3px 8px; border-radius: 6px;
+  margin: 2px; font-size: 11px; color: #444;
+}
 
-  /* Модальные окна */
-  .modal {
-    position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: 92%; max-width: 400px; max-height: 85%; background: #0d0d0d;
-    border: 2px solid #5c1a1a; z-index: 200; padding: 15px;
-    overflow-y: auto; border-radius: 6px; display: none;
-  }
-  .modal.open { display: block; }
-  .modal h2 { color: #c44; text-align: center; margin-bottom: 12px; }
+#locActions { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.loc-btn {
+  padding: 13px 14px; background: #faf7f2; border: 1px solid #d5cbb8; color: #111;
+  font-size: 13px; cursor: pointer; border-radius: 10px; text-align: left;
+  transition: all 0.15s; font-weight: 400;
+}
+.loc-btn:active { background: #ede4d4; transform: scale(0.98); }
+#npcRow { display: flex; align-items: center; gap: 8px; margin: 6px 0; padding: 10px; background: #faf7f2; border-radius: 10px; }
+#npcRow button { padding: 6px 14px; background: #fefefe; border: 1px solid #d5cbb8; font-size: 12px; cursor: pointer; border-radius: 8px; transition: all 0.15s; }
+#enemyList { display: flex; flex-direction: column; gap: 5px; }
+.enemy-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px; background: #faf7f2; border: 1px solid #e0d8cc; border-radius: 10px;
+  transition: all 0.15s;
+}
+.enemy-row button { padding: 6px 14px; background: #fefefe; border: 1px solid #c44; color: #c44; border-radius: 8px; cursor: pointer; font-size: 12px; }
 
-  /* Сетка инвентаря */
-  #invGrid {
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px;
-  }
-  .inv-cell {
-    background: #1a1a1a; border: 1px solid #5c1a1a; aspect-ratio: 1;
-    font-size: 9px; text-align: center; padding: 2px; cursor: pointer;
-    border-radius: 3px; color: #e0c080; display: flex;
-    align-items: center; justify-content: center; word-break: break-all;
-  }
-  .inv-cell:hover { border-color: #c44; }
-  .inv-cell.empty { color: #333; cursor: default; }
+#battleFull {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #fefefe; z-index: 300; flex-direction: column; padding: 24px;
+}
+#battleFull.active { display: flex; }
+#battleTop { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+.battle-entity { text-align: center; width: 40%; }
+.battle-entity .icon { font-size: 52px; }
+.battle-entity .name { font-weight: 400; margin: 4px 0; font-size: 15px; }
+.battle-entity .hp-text { font-size: 12px; color: #888; }
+.timer-bar-outer { background: #eee; height: 5px; border-radius: 3px; margin-top: 8px; }
+.timer-bar-inner { background: #c44; height: 5px; border-radius: 3px; transition: width 0.1s linear; }
+#battleLog { flex: 1; overflow-y: auto; text-align: center; font-size: 14px; color: #444; line-height: 1.8; padding: 10px 0; }
+#battleBottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; }
+.battle-btn {
+  padding: 18px 32px; font-size: 16px; background: #faf7f2; border: 2px solid #d5cbb8;
+  border-radius: 14px; cursor: pointer; font-weight: 400; transition: all 0.15s;
+}
+.battle-btn:active { background: #ede4d4; transform: scale(0.95); }
+#skillPopup { display: none; position: absolute; bottom: 100px; right: 20px; background: #fefefe; border: 2px solid #d5cbb8; border-radius: 12px; padding: 10px; z-index: 310; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+#skillPopup button { display: block; padding: 12px 16px; background: #faf7f2; border: 1px solid #e0d8cc; margin: 4px 0; border-radius: 8px; cursor: pointer; width: 100%; font-size: 13px; }
 
-  .modal-close {
-    display: block; width: 100%; margin-top: 10px; padding: 10px;
-    background: #1a1a1a; color: #c66; border: 1px solid #8a3a3a;
-    font-family: inherit; font-size: 13px; cursor: pointer;
-    text-transform: uppercase; letter-spacing: 1px;
-  }
+#battleResult {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #fefefe; z-index: 350; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center; padding: 30px;
+}
+#battleResult.active { display: flex; }
+#battleResult h2 { font-size: 26px; font-weight: 400; margin-bottom: 16px; }
+#battleResult p { font-size: 14px; color: #666; margin: 4px 0; }
+#battleResult button { margin-top: 24px; padding: 14px 36px; background: #faf7f2; border: 2px solid #d5cbb8; border-radius: 12px; font-size: 15px; cursor: pointer; font-weight: 400; }
 
-  .weight-info { text-align: center; font-size: 11px; margin: 6px 0; color: #a08060; }
+.fullscreen {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: #fefefe; z-index: 250; padding: 20px; overflow-y: auto;
+}
+.fullscreen.active { display: block; }
+.fullscreen h2 { font-weight: 400; margin-bottom: 18px; font-size: 18px; letter-spacing: 1px; }
+.fullscreen .back-btn {
+  padding: 10px 16px; background: #faf7f2; border: 1px solid #d5cbb8;
+  font-size: 13px; cursor: pointer; border-radius: 8px; margin-bottom: 16px; display: inline-block;
+  transition: all 0.15s;
+}
+.fullscreen .back-btn:active { background: #ede4d4; }
+.equip-slot-mini {
+  border: 1px solid #d5cbb8; padding: 10px 6px; text-align: center; font-size: 10px;
+  border-radius: 8px; background: #faf7f2; cursor: pointer; transition: all 0.15s;
+}
+.equip-slot-mini:active { background: #ede4d4; }
+.stat-row { display: flex; justify-content: space-between; padding: 8px 0; align-items: center; border-bottom: 1px solid #f0e8d8; }
+.stat-row button {
+  width: 30px; height: 30px; background: #faf7f2; border: 1px solid #d5cbb8;
+  cursor: pointer; border-radius: 8px; font-size: 18px; transition: all 0.15s;
+}
+.stat-row button:active { background: #ede4d4; }
+.inv-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px; border-bottom: 1px solid #f0e8d8; background: #faf7f2;
+  border-radius: 8px; margin: 4px 0;
+}
+.inv-row .inv-name { font-weight: 400; }
+.inv-row .inv-info { font-size: 12px; color: #888; }
+.friend-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0e8d8; }
 
-  /* Цвета лога */
-  .loot-flash { color: #ffaa00; }
-  .rare-flash { color: #cc55ff; }
-  .dmg-flash { color: #ff5555; }
-  .heal-flash { color: #55cc55; }
+#chatBar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto; background: #fefefe; border-top: 2px solid #e0d8cc; z-index: 50; }
+#chatToggle { width: 100%; padding: 12px; background: #faf7f2; border: none; font-size: 13px; cursor: pointer; font-weight: 400; transition: all 0.15s; }
+#chatToggle:active { background: #ede4d4; }
+#chatBody { display: none; padding: 8px; }
+#chatBody.open { display: block; }
+#chatMessages { max-height: 100px; overflow-y: auto; font-size: 11px; margin-bottom: 6px; border: 1px solid #e0d8cc; padding: 6px; border-radius: 8px; background: #faf7f2; }
+#chatInputRow { display: flex; gap: 6px; }
+#chatInputRow input { flex: 1; padding: 10px; border: 1px solid #d5cbb8; border-radius: 8px; font-size: 12px; }
+#chatInputRow button { padding: 10px 16px; background: #faf7f2; border: 1px solid #d5cbb8; cursor: pointer; border-radius: 8px; font-weight: 400; }
+
+input { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #d5cbb8; font-size: 13px; border-radius: 8px; }
+.btn { padding: 11px; margin: 4px 0; background: #faf7f2; border: 1px solid #d5cbb8; cursor: pointer; font-size: 13px; border-radius: 8px; width: 100%; transition: all 0.15s; font-weight: 400; }
+.btn:active { background: #ede4d4; }
 </style>
- <!-- Firebase SDKs -->
+</head>
+<body>
+
+<div id="overlay" onclick="closeAll()"></div>
+
+<div id="sideMenu">
+  <div class="menu-profile">
+    <div class="nick" id="menuNick">Игрок</div>
+    <div class="class-lvl" id="menuClass">Воин · Ур. 1</div>
+  </div>
+  <button class="menu-item" onclick="openStats()">👤 Персонаж</button>
+  <button class="menu-item" onclick="openSkills()">✨ Умения</button>
+  <button class="menu-item" onclick="openInv()">🎒 Инвентарь</button>
+  <button class="menu-item" onclick="closeMenuGoLocation()">📍 Локация</button>
+  <button class="menu-item" onclick="openQuests()">📜 Задания</button>
+  <button class="menu-item" onclick="openFriends()">👥 Друзья</button>
+  <button class="menu-item" onclick="openAccount()">⚙️ Аккаунт</button>
+  <div class="menu-online">🟢 Онлайн: <b id="menuOnline">0</b></div>
+</div>
+
+<div id="battleFull">
+  <div id="battleTop">
+    <div class="battle-entity">
+      <div class="icon">🧑</div><div class="name" id="bPlayerName">Вы</div>
+      <div class="hp-text" id="bPlayerHP">50/50</div>
+      <div class="timer-bar-outer"><div class="timer-bar-inner" id="bPlayerTimer" style="width:100%"></div></div>
+    </div>
+    <div style="font-size:24px;color:#c44;">⚔️</div>
+    <div class="battle-entity">
+      <div class="icon">👾</div><div class="name" id="bEnemyName">Слизень</div>
+      <div class="hp-text" id="bEnemyHP">20/20</div>
+      <div class="timer-bar-outer"><div class="timer-bar-inner" id="bEnemyTimer" style="width:100%"></div></div>
+    </div>
+  </div>
+  <div id="battleLog"></div>
+  <div id="battleBottom">
+    <button class="battle-btn" onclick="battleAction('attack')">⚔️ Атака</button>
+    <button class="battle-btn" onclick="toggleSkillPopup()">📜 Приёмы</button>
+  </div>
+  <div id="skillPopup">
+    <button onclick="battleAction('skill1')">💥 Усиленный удар</button>
+    <button onclick="toggleSkillPopup()">Закрыть</button>
+  </div>
+</div>
+
+<div id="battleResult">
+  <h2 id="resultTitle"></h2>
+  <p id="resultXp"></p>
+  <p id="resultLoot"></p>
+  <button onclick="closeBattleResult()">Продолжить</button>
+</div>
+
+<div id="statsScreen" class="fullscreen">
+  <div class="back-btn" onclick="closeFullscreen('statsScreen')">← Назад</div>
+  <h2>Персонаж</h2>
+  <div style="text-align:center;font-size:64px;">🧑</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0;" id="equipSlots"></div>
+  <p style="color:#888;">Очков: <b id="statPoints">0</b></p>
+  <div id="statsList"></div>
+</div>
+
+<div id="skillsScreen" class="fullscreen">
+  <div class="back-btn" onclick="closeFullscreen('skillsScreen')">← Назад</div>
+  <h2>Умения</h2>
+  <div id="skillsContent"></div>
+</div>
+
+<div id="invScreen" class="fullscreen">
+  <div class="back-btn" onclick="closeFullscreen('invScreen')">← Назад</div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <h2 style="margin:0;">Инвентарь (<span id="invUsed">0</span>/50)</h2>
+    <span style="font-size:14px;color:#888;">💰 <b id="invSilver" style="color:#111;">0</b> серебра</span>
+  </div>
+  <div id="invList"></div>
+</div>
+
+<div id="questsScreen" class="fullscreen">
+  <div class="back-btn" onclick="closeFullscreen('questsScreen')">← Назад</div>
+  <h2>Задания</h2>
+  <p style="color:#888;">Заданий пока нет.</p>
+</div>
+
+<div id="friendsScreen" class="fullscreen">
+  <div class="back-btn" onclick="closeFullscreen('friendsScreen')">← Назад</div>
+  <h2>Друзья</h2>
+  <input id="friendSearch" type="text" placeholder="Введите ник игрока">
+  <button class="btn" onclick="sendFriendRequest()">Отправить приглашение</button>
+  <div id="friendsList" style="margin-top:10px;"></div>
+</div>
+
+<div id="accountScreen" class="fullscreen">
+  <div class="back-btn" onclick="closeFullscreen('accountScreen')">← Назад</div>
+  <h2>Аккаунт</h2>
+  <p style="color:#888;">Текущий ник: <b id="accountNick"></b></p>
+  <input id="newNick" type="text" placeholder="Новый ник">
+  <button class="btn" onclick="changeNick()">Сохранить</button>
+</div>
+
+<div id="guildScreen" class="fullscreen">
+  <div class="back-btn" onclick="closeFullscreen('guildScreen')">← Назад</div>
+  <h2 id="guildTitle"></h2>
+  <p id="guildDesc"></p>
+</div>
+
+<div id="npcModal" class="fullscreen" style="z-index:260;">
+  <div class="back-btn" onclick="closeNpcChat()">← Назад</div>
+  <h2 id="npcName">Стражник</h2>
+  <p id="npcText"></p>
+</div>
+
+<div id="topbar">
+  <button id="menuBtn" onclick="toggleMenu()">☰</button>
+  <span id="gameTitle">Азгрант</span>
+  <div id="topIcons">
+    <span class="top-icon" onclick="openStats()">❤️ <span id="topHP">50</span></span>
+    <span class="top-icon" onclick="openSkills()">💧 <span id="topMana">20</span></span>
+    <span class="top-icon" onclick="openInv()">🎒 <span id="topInv">0</span></span>
+  </div>
+</div>
+
+<div id="mainContent">
+  <div id="locName">Центр Города</div>
+  <div id="locDesc"></div>
+  <div id="playersHere"></div>
+  <div id="locActions"></div>
+  <div id="npcRow"></div>
+  <div id="enemyList"></div>
+</div>
+
+<div id="chatBar">
+  <button id="chatToggle" onclick="toggleChat()">💬 Чат</button>
+  <div id="chatBody">
+    <div id="chatMessages"></div>
+    <div id="chatInputRow">
+      <input id="chatInput" type="text" placeholder="Сообщение...">
+      <button onclick="sendMessage()">→</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAIbLFExee5KhkOITgeJyJrzi62akz5HxE",
-    authDomain: "rpg-game-a59b5.firebaseapp.com",
-    projectId: "rpg-game-a59b5",
-    storageBucket: "rpg-game-a59b5.firebasestorage.app",
-    messagingSenderId: "94355006065",
-    appId: "1:94355006065:web:4b46b78fc8a4c0991fb1d0"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-</script>
-</head>
-<body>
-
-<!-- Оверлей -->
-<div id="overlay" onclick="closeAll()"></div>
-
-<!-- Боковое меню -->
-<div id="sideMenu">
-  <h3>☰ МЕНЮ</h3>
-  <button class="menu-item" onclick="openInv()">🎒 Инвентарь</button>
-  <button class="menu-item" onclick="openStats()">📊 Характеристики</button>
-  <button class="menu-item" onclick="closeAll()">❌ Закрыть</button>
-</div>
-
-<!-- Окно инвентаря -->
-<div id="invModal" class="modal">
-  <h2>🎒 ИНВЕНТАРЬ (Вес: <span id="curWeight">0</span>/50 кг)</h2>
-  <div id="invGrid"></div>
-  <p class="weight-info" id="weightWarn" style="display:none; color:#c66;">⚠️ Перегруз! В бою скорость снижена.</p>
-  <button class="modal-close" onclick="closeAll()">ЗАКРЫТЬ</button>
-</div>
-
-<!-- Окно предмета -->
-<div id="itemModal" class="modal">
-  <h2 id="itemModalName">Предмет</h2>
-  <p id="itemModalDesc"></p>
-  <button class="btn" id="itemEquipBtn" onclick="equipSelected()">НАДЕТЬ</button>
-  <button class="btn" id="itemUseBtn" onclick="useSelected()">ИСПОЛЬЗОВАТЬ</button>
-  <button class="btn danger" onclick="dropSelected()">ВЫБРОСИТЬ</button>
-  <button class="modal-close" onclick="closeItemModal()">ОТМЕНА</button>
-</div>
-
-<!-- Окно характеристик -->
-<div id="statsModal" class="modal">
-  <h2>📊 ХАРАКТЕРИСТИКИ</h2>
-  <div id="statsContent" style="line-height:2;font-size:13px;"></div>
-  <button class="modal-close" onclick="closeAll()">ЗАКРЫТЬ</button>
-</div>
-
-<!-- Верхняя панель -->
-<div id="topbar">
-  <button id="menuBtn" onclick="toggleMenu()">☰</button>
-  <h1>Hardcore Grind</h1>
-</div>
-
-<!-- Основной контент -->
-<div id="mainContent">
-
-<div id="statsBar">
-  <span>❤️ HP <b id="hp">50</b>/<b id="maxhp">50</b></span>
-  <span>💀 Ур. <b id="lvl">1</b></span>
-  <span>⚔️ Сила <b id="str">6</b></span>
-  <span>💨 Ловк <b id="agi">4</b></span>
-  <span>🧠 Инт <b id="int">3</b></span>
-  <span>💰 Золото <b id="gold">0</b></span>
-</div>
-
-<!-- Аккаунт -->
-<div id="authBar" style="display:flex;gap:6px;margin-bottom:8px;">
-  <button class="btn" id="btnLogin" onclick="showLogin()" style="flex:1;font-size:11px;">🔑 Войти</button>
-  <button class="btn" id="btnRegister" onclick="showRegister()" style="flex:1;font-size:11px;">📝 Регистрация</button>
-  <button class="btn danger" id="btnLogout" onclick="logout()" style="flex:1;font-size:11px;display:none;">🚪 Выйти</button>
-</div>
-<div id="authMsg" style="text-align:center;font-size:11px;color:#a08060;margin-bottom:4px;"></div>
-
-<!-- Окно входа/регистрации -->
-<div id="authModal" class="modal">
-  <h2 id="authTitle">Вход</h2>
-  <input id="authEmail" type="email" placeholder="Email" style="width:100%;padding:10px;margin:6px 0;background:#1a1a1a;color:#e0c080;border:1px solid #5c1a1a;">
-  <input id="authPass" type="password" placeholder="Пароль" style="width:100%;padding:10px;margin:6px 0;background:#1a1a1a;color:#e0c080;border:1px solid #5c1a1a;">
-  <input id="authPass2" type="password" placeholder="Повтори пароль" style="width:100%;padding:10px;margin:6px 0;background:#1a1a1a;color:#e0c080;border:1px solid #5c1a1a;display:none;">
-  <p id="authError" style="color:#c66;font-size:11px;display:none;"></p>
-  <button class="btn" id="authSubmit" onclick="handleAuth()">Войти</button>
-  <button class="modal-close" onclick="closeAuthModal()">ОТМЕНА</button>
-</div>
-
-<div id="equipBar">
-  <div class="equip-slot" onclick="unequip('head')"><div class="slot-label">ГОЛОВА</div><div class="slot-item" id="eqHead">-</div></div>
-  <div class="equip-slot" onclick="unequip('chest')"><div class="slot-label">ТОРС</div><div class="slot-item" id="eqChest">-</div></div>
-  <div class="equip-slot" onclick="unequip('weapon')"><div class="slot-label">ОРУЖИЕ</div><div class="slot-item" id="eqWeapon">-</div></div>
-  <div class="equip-slot" onclick="unequip('gloves')"><div class="slot-label">ПЕРЧАТКИ</div><div class="slot-item" id="eqGloves">-</div></div>
-  <div class="equip-slot" onclick="unequip('boots')"><div class="slot-label">БОТИНКИ</div><div class="slot-item" id="eqBoots">-</div></div>
-  <div class="equip-slot" onclick="unequip('accessory')"><div class="slot-label">КОЛЬЦО</div><div class="slot-item" id="eqAccessory">-</div></div>
-</div>
-
-<div id="mapArea">
-  <h3>📍 Локация: <span id="mapName">Мрачный лес</span> (ур. <span id="mapLevel">1</span>)</h3>
-  <div id="nodeList"></div>
-  <button class="btn" id="nextMapBtn" style="display:none; margin-top:8px;" onclick="nextMap()">➡️ Следующая локация</button>
-</div>
-
-<div id="log"></div>
-
-<!-- Игроки онлайн -->
-<div id="onlineArea" style="display:none;margin-top:8px;">
-  <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-    <span style="color:#5c5;font-size:10px;">🟢</span>
-    <span style="color:#a08060;font-size:11px;">Онлайн: <b id="onlineCount" style="color:#e0c080;">0</b></span>
-  </div>
-</div>
-
-<!-- Чат -->
-<div id="chatArea" style="display:none;margin-top:8px;">
-  <div style="color:#c44;font-size:13px;margin-bottom:4px;">💬 Чат</div>
-  <div id="chatMessages" style="background:#0d0d0d;border:1px solid #5c1a1a;height:120px;overflow-y:auto;padding:8px;border-radius:4px;font-size:11px;margin-bottom:4px;"></div>
-  <div style="display:flex;gap:4px;">
-    <input id="chatInput" type="text" placeholder="Сообщение..." style="flex:1;padding:8px;background:#1a1a1a;color:#e0c080;border:1px solid #5c1a1a;">
-    <button class="btn" onclick="sendMessage()" style="width:60px;">➤</button>
-  </div>
-</div>
-
-<!-- Боевой экран -->
-<div id="battleScreen">
-  <h3 style="color:#c44;">⚔️ БОЙ</h3>
-  <div id="enemyList"></div>
-  <hr style="border-color:#5c1a1a;">
-  <button class="btn" onclick="battleAction('attack')">⚔️ Атака</button>
-  <button class="btn" onclick="battleAction('defend')">🛡️ Защита</button>
-  <button class="btn" onclick="battleAction('skill1')">🔥 Навык: Огонь</button>
-  <button class="btn heal" onclick="battleAction('skill2')">💚 Навык: Исцеление</button>
-  <button class="btn" onclick="battleAction('potion')">🧪 Зелье</button>
-  <button class="btn danger" onclick="battleAction('flee')">🏃 Сбежать</button>
-</div>
-
-</div>
-
-<script>
-// ==================== ДАННЫЕ ИГРОКА ====================
-let player = {
-  level: 1, exp: 0, expToNext: 50,
-  hp: 50, maxHp: 50,
-  strength: 6, agility: 4, intelligence: 3,
-  gold: 0
+const firebaseConfig = {
+  apiKey: "AIzaSyAIbLFExee5KhkOITgeJyJrzi62akz5HxE",
+  authDomain: "rpg-game-a59b5.firebaseapp.com",
+  projectId: "rpg-game-a59b5",
+  storageBucket: "rpg-game-a59b5.firebasestorage.app",
+  messagingSenderId: "94355006065",
+  appId: "1:94355006065:web:4b46b78fc8a4c0991fb1d0"
 };
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
+let currentUser = null, nickname = '';
+let player = { hp:50, maxHp:50, mana:20, maxMana:20, level:1, exp:0, expToNext:50,
+  strength:5, agility:5, endurance:5, intuition:5, wisdom:5, luck:5, statPoints:0, charClass:'Воин', silver:0 };
 let inventory = [];
-let equipped = { head: null, chest: null, weapon: null, gloves: null, boots: null, accessory: null };
+let currentLocation = 'center';
+let battle = null, battleTimer = null, battleTurn = 'player', battleTime = 10;
+let chatOpen = false, skillPopupOpen = false;
 
-let locationData = {
-  currentMapIndex: 0,
-  currentNode: 0,
-  visitedNodes: [],
-  maps: [
-    { name: "Мрачный лес", level: 1 },
-    { name: "Пепельная пустошь", level: 2 },
-    { name: "Гиблые болота", level: 3 },
-  ]
+const locations = {
+  center: { name:'Центр Города', desc:'Центр давно забытого города. Мощёная площадь, вокруг старые здания.', actions:[
+    {text:'🏪 Рынок', go:'market'}, {text:'🏛️ Гильдии', go:'guild'}, {text:'🚪 К воротам', go:'gate'}
+  ]},
+  market: { name:'Рынок', desc:'Торговые ряды. Пахнет специями и кожей.', actions:[{text:'⬅️ В центр', go:'center'}] },
+  guild: { name:'Гильдии', desc:'Величественное здание с четырьмя крыльями.', actions:[
+    {text:'⚔️ Гильдия воинов', go:'guild_warrior'},
+    {text:'🪄 Гильдия магов', go:'guild_mage'},
+    {text:'🏹 Гильдия охотников', go:'guild_hunter'},
+    {text:'🧘 Гильдия монахов', go:'guild_monk'},
+    {text:'⬅️ В центр', go:'center'}
+  ]},
+  guild_warrior: { name:'Гильдия воинов', desc:'Зал славы, увешанный оружием. Здесь тренируются лучшие бойцы Азгранта.', actions:[{text:'⬅️ Назад', go:'guild'}] },
+  guild_mage: { name:'Гильдия магов', desc:'Башня, пропитанная магической энергией. Пахнет озоном и старыми книгами.', actions:[{text:'⬅️ Назад', go:'guild'}] },
+  guild_hunter: { name:'Гильдия охотников', desc:'Охотничий зал с трофеями на стенах. Здесь учат выживать в дикой местности.', actions:[{text:'⬅️ Назад', go:'guild'}] },
+  guild_monk: { name:'Гильдия монахов', desc:'Тихое убежище для размышлений. Монахи практикуют дисциплину духа и тела.', actions:[{text:'⬅️ Назад', go:'guild'}] },
+  gate: { name:'Ворота Города', desc:'Ворота города Азгрант. Дальше — неизвестность.', actions:[
+    {text:'⬅️ В центр', go:'center'}, {text:'🌿 Выйти на поляну', go:'glade'}
+  ], npc:'guard'},
+  glade: { name:'Поляна', desc:'Тихая поляна. Слышно шуршание.', actions:[{text:'🚪 К воротам', go:'gate'}], enemies:true },
 };
 
-let battleState = null;
-let selectedItemIndex = null;
+const gladeEnemies = [
+  {name:'Синий слизень',level:1,hp:20,maxHp:20,atk:3,def:0,speed:2,xp:10,silver:2,loot:'Слизь',count:4},
+  {name:'Зелёный слизень-кроха',level:3,hp:40,maxHp:40,atk:6,def:1,speed:3,xp:25,silver:5,loot:'Зелёная слизь',count:1},
+];
+let aliveEnemies = [];
 
-// ==================== ФУНКЦИИ ОТОБРАЖЕНИЯ ====================
-const logDiv = document.getElementById('log');
-
-function addLog(text, cls = '') {
-  let p = document.createElement('p');
-  p.innerHTML = text;
-  if (cls) p.className = cls;
-  logDiv.appendChild(p);
-  logDiv.scrollTop = logDiv.scrollHeight;
-}
-
-function updateUI() {
-  document.getElementById('hp').innerText = player.hp;
-  document.getElementById('maxhp').innerText = player.maxHp;
-  document.getElementById('lvl').innerText = player.level;
-  document.getElementById('str').innerText = player.strength + getEquipBonus('strength');
-  document.getElementById('agi').innerText = player.agility + getEquipBonus('agility');
-  document.getElementById('int').innerText = player.intelligence + getEquipBonus('intelligence');
-  document.getElementById('gold').innerText = player.gold;
-
-  for (let slot of ['head','chest','weapon','gloves','boots','accessory']) {
-    let el = document.getElementById('eq' + slot.charAt(0).toUpperCase() + slot.slice(1));
-    el.innerText = equipped[slot] ? equipped[slot].name.substring(0, 10) : '-';
-  }
-
-  document.getElementById('mapName').innerText = locationData.maps[locationData.currentMapIndex].name;
-  document.getElementById('mapLevel').innerText = locationData.maps[locationData.currentMapIndex].level;
-  renderNodes();
-  saveGame();
-}
-
-function getEquipBonus(stat) {
-  let bonus = 0;
-  for (let slot of Object.values(equipped)) {
-    if (slot && slot.bonus && slot.bonus[stat]) bonus += slot.bonus[stat];
-  }
-  return bonus;
-}
-
-function getSpeed() {
-  return player.agility + getEquipBonus('agility');
-}
-
-function getAttack() {
-  let atk = player.strength + getEquipBonus('strength');
-  if (equipped.weapon && equipped.weapon.bonus && equipped.weapon.bonus.strength) {
-    atk += equipped.weapon.bonus.strength;
-  }
-  return atk;
-}
-
-function getDefense() {
-  let def = 0;
-  if (equipped.chest && equipped.chest.bonus && equipped.chest.bonus.defense) def += equipped.chest.bonus.defense;
-  if (equipped.gloves && equipped.gloves.bonus && equipped.gloves.bonus.defense) def += equipped.gloves.bonus.defense;
-  if (equipped.boots && equipped.boots.bonus && equipped.boots.bonus.defense) def += equipped.boots.bonus.defense;
-  if (equipped.head && equipped.head.bonus && equipped.head.bonus.defense) def += equipped.head.bonus.defense;
-  return def;
-}
-
-function getTotalWeight() {
-  let w = 0;
-  for (let item of inventory) w += item.weight || 0;
-  for (let item of Object.values(equipped)) if (item) w += item.weight || 0;
-  return w;
-}
-
-function isOverweight() { return getTotalWeight() > 50; }
-
-// ==================== КАРТА ====================
-function renderNodes() {
-  let list = document.getElementById('nodeList');
+function renderLocation() {
+  let loc = locations[currentLocation];
+  document.getElementById('locName').innerText = loc.name;
+  document.getElementById('locDesc').innerText = loc.desc;
   let html = '';
-  for (let i = 0; i < 10; i++) {
-    let cls = 'node';
-    if (i === locationData.currentNode) cls += ' current';
-    if (locationData.visitedNodes.includes(i)) cls += ' done';
-    html += `<div class="${cls}" onclick="moveToNode(${i})">${i}</div>`;
-  }
-  list.innerHTML = html;
-
-  let allDone = locationData.visitedNodes.length >= 10;
-  document.getElementById('nextMapBtn').style.display = allDone ? 'block' : 'none';
-}
-
-function moveToNode(index) {
-  if (battleState) { addLog("⚠️ Закончи бой!"); return; }
-  if (index === locationData.currentNode) return;
-  if (index !== locationData.currentNode - 1 && index !== locationData.currentNode + 1) {
-    addLog("⚠️ Можно двигаться только на соседний узел.");
-    return;
-  }
-  if (locationData.visitedNodes.includes(index)) {
-    addLog("📍 Этот узел уже пройден.");
-    locationData.currentNode = index;
-    updateUI();
-    return;
-  }
-
-  locationData.currentNode = index;
-  addLog(`🚶 Перемещаюсь на узел ${index}...`);
-  triggerEvent();
+  loc.actions.forEach(a => html += `<button class="loc-btn" onclick="goTo('${a.go}')">${a.text}</button>`);
+  document.getElementById('locActions').innerHTML = html;
+  if (loc.npc === 'guard') document.getElementById('npcRow').innerHTML = `Стражник <button onclick="openNpcChat()">💬 Говорить</button>`;
+  else document.getElementById('npcRow').innerHTML = '';
+  if (loc.enemies) renderEnemies(); else document.getElementById('enemyList').innerHTML = '';
+  loadPlayersHere();
   updateUI();
 }
 
-function triggerEvent() {
-  let roll = Math.random();
-  if (roll < 0.5) startBattle(false);
-  else if (roll < 0.75) openChest();
-  else if (roll < 0.9) merchantEvent();
-  else restEvent();
-}
-
-function openChest() {
-  let gold = Math.floor(Math.random() * 20) + 5;
-  player.gold += gold;
-  addLog(`📦 Сундук! +${gold} золота.`, 'loot-flash');
-  if (Math.random() < 0.4) {
-    let item = generateRandomItem(false);
-    inventory.push(item);
-    addLog(`📦 В сундуке найден предмет: <b>${item.name}</b>`, 'rare-flash');
-  }
-  locationData.visitedNodes.push(locationData.currentNode);
-  saveGame();
-}
-
-function merchantEvent() {
-  let heal = Math.floor(player.maxHp * 0.3);
-  player.hp = Math.min(player.maxHp, player.hp + heal);
-  addLog(`🧑‍🌾 Торговец поделился припасами. +${heal} HP.`, 'heal-flash');
-  locationData.visitedNodes.push(locationData.currentNode);
-}
-
-function restEvent() {
-  let heal = Math.floor(player.maxHp * 0.5);
-  player.hp = Math.min(player.maxHp, player.hp + heal);
-  addLog(`🔥 Место для привала. +${heal} HP.`, 'heal-flash');
-  locationData.visitedNodes.push(locationData.currentNode);
-}
-
-function nextMap() {
-  if (locationData.currentMapIndex < locationData.maps.length - 1) {
-    locationData.currentMapIndex++;
-    locationData.currentNode = 0;
-    locationData.visitedNodes = [];
-    addLog(`🗺️ Новая локация: <b>${locationData.maps[locationData.currentMapIndex].name}</b>!`, 'loot-flash');
-    updateUI();
-  } else {
-    addLog("🏆 Ты прошёл все доступные локации!");
-  }
-}
-
-// ==================== БОЙ ====================
-function startBattle(isBoss = false) {
-  let mapLevel = locationData.maps[locationData.currentMapIndex].level;
-  let count = Math.random() < 0.3 ? 2 : (Math.random() < 0.1 ? 3 : 1);
-  let enemies = [];
-  let names = ["Гоблин", "Волк", "Скелет", "Паук", "Культист", "Демон", "Тролль", "Дух"];
-
-  for (let i = 0; i < count; i++) {
-    let name = names[Math.floor(Math.random() * names.length)] + (count > 1 ? ' ' + (i+1) : '');
-    enemies.push({
-      name: name,
-      hp: 15 + mapLevel * 10 + Math.floor(Math.random() * 10),
-      maxHp: 15 + mapLevel * 10 + Math.floor(Math.random() * 10),
-      attack: 3 + mapLevel * 2,
-      defense: mapLevel,
-      speed: 3 + mapLevel,
-      xp: 30 + mapLevel * 15,
-      gold: 5 + mapLevel * 3,
-    });
-  }
-
-  battleState = {
-    enemies: enemies,
-    playerDefending: false,
-    turn: getSpeed() >= enemies[0].speed ? 'player' : 'enemy',
-  };
-
-  document.getElementById('battleScreen').classList.add('active');
-  renderEnemies();
-  addLog(`⚔️ Бой начался! Противников: ${count}. Первый ход: ${battleState.turn === 'player' ? 'твой' : 'врага'}.`, 'dmg-flash');
-
-  if (battleState.turn === 'enemy') enemyTurn();
+function goTo(loc) {
+  currentLocation = loc;
+  battle = null; clearInterval(battleTimer);
+  document.getElementById('battleFull').classList.remove('active');
+  if (currentUser) db.collection('locations').doc(currentUser.uid).set({location:loc, nickname:nickname, lastSeen:new Date()});
+  renderLocation();
 }
 
 function renderEnemies() {
-  let list = document.getElementById('enemyList');
+  if (aliveEnemies.length === 0) gladeEnemies.forEach(e => { for(let i=0;i<e.count;i++) aliveEnemies.push({...e,id:Date.now()+Math.random()}); });
   let html = '';
-  for (let i = 0; i < battleState.enemies.length; i++) {
-    let e = battleState.enemies[i];
-    let hpPct = Math.max(0, e.hp / e.maxHp * 100);
-    html += `
-      <div class="enemy-row">
-        <span class="enemy-icon">👹</span>
-        <div style="flex:1;">
-          <b>${e.name}</b>
-          <div class="hp-bar-outer"><div class="hp-bar-inner" style="width:${hpPct}%"></div></div>
-          <small>HP: ${e.hp}/${e.maxHp}</small>
-        </div>
-      </div>`;
-  }
-  list.innerHTML = html;
+  aliveEnemies.forEach((e,i) => {
+    if (e.hp > 0) html += `<div class="enemy-row"><span>${e.name} [${e.level}]</span><span>HP:${e.hp}/${e.maxHp}</span><button onclick="startBattle(${i})">Атаковать</button></div>`;
+  });
+  document.getElementById('enemyList').innerHTML = html;
+  if (aliveEnemies.every(e=>e.hp<=0)) setTimeout(()=>{aliveEnemies=[]; renderEnemies();}, 20000);
 }
 
-function battleAction(action) {
-  if (!battleState) return;
-  if (battleState.turn !== 'player') { addLog("⏳ Сейчас ход врага!"); return; }
-
-  if (action === 'attack') {
-    let target = battleState.enemies.find(e => e.hp > 0);
-    if (!target) return;
-    let dmg = Math.max(1, getAttack() - target.defense);
-    let crit = Math.random() < 0.1;
-    if (crit) dmg = Math.floor(dmg * 1.5);
-    target.hp -= dmg;
-    addLog(`🗡️ Ты атакуешь ${target.name} на ${dmg} урона.${crit ? ' 💥КРИТ!' : ''}`);
-    if (target.hp <= 0) {
-      addLog(`💀 ${target.name} повержен!`);
+function loadPlayersHere() {
+  db.collection('locations').where('location','==',currentLocation).onSnapshot(snap => {
+    let nicks = [];
+    snap.forEach(doc => { let d=doc.data(); if (d.nickname && d.nickname !== nickname) nicks.push(d.nickname); });
+    let el = document.getElementById('playersHere');
+    if (nicks.length > 0) {
+      el.innerHTML = `Игроки здесь: <b>${nicks.length}</b><br>${nicks.map(n=>`<span class="player-nick">${n}</span>`).join(' ')}`;
+    } else {
+      el.innerHTML = 'Игроки здесь: <b>0</b>';
     }
-  }
-  else if (action === 'defend') {
-    battleState.playerDefending = true;
-    addLog("🛡️ Ты встаёшь в защиту (следующий урон -50%).");
-  }
-  else if (action === 'skill1') {
-    let target = battleState.enemies.find(e => e.hp > 0);
-    if (!target) return;
-    let dmg = 8 + player.intelligence * 2;
-    target.hp -= dmg;
-    addLog(`🔥 Огненный шар! ${target.name} получает ${dmg} урона.`);
-    if (target.hp <= 0) addLog(`💀 ${target.name} повержен!`);
-  }
-  else if (action === 'skill2') {
-    let heal = 10 + player.intelligence * 3;
-    player.hp = Math.min(player.maxHp, player.hp + heal);
-    addLog(`💚 Исцеление! +${heal} HP.`, 'heal-flash');
-  }
-  else if (action === 'potion') {
-    let potIdx = inventory.findIndex(i => i.type === 'consumable' && i.heal);
-    if (potIdx === -1) { addLog("⚠️ Нет зелий!"); return; }
-    player.hp = Math.min(player.maxHp, player.hp + inventory[potIdx].heal);
-    addLog(`🧪 Зелье! +${inventory[potIdx].heal} HP.`, 'heal-flash');
-    inventory.splice(potIdx, 1);
-  }
-  else if (action === 'flee') {
-    let chance = 30 + getSpeed() / 10;
-    if (Math.random() * 100 < chance) {
-      addLog("🏃 Ты сбежал!");
-      battleState = null;
-      document.getElementById('battleScreen').classList.remove('active');
-      updateUI();
-      return;
-    }
-    addLog("❌ Побег не удался!");
-  }
+  });
+}
 
-  battleState.playerDefending = false;
-  renderEnemies();
-  checkBattleEnd();
+function updateUI() {
+  document.getElementById('topHP').innerText = player.hp;
+  document.getElementById('topMana').innerText = player.mana;
+  document.getElementById('topInv').innerText = inventory.
+       document.getElementById('topInv').innerText = inventory.length;
+  document.getElementById('menuNick').innerText = nickname || 'Игрок';
+  document.getElementById('menuClass').innerText = player.charClass + ' · Ур. ' + player.level;
+}
 
-  if (battleState) {
-    battleState.turn = 'enemy';
-    setTimeout(enemyTurn, 500);
+// ===== БОЙ =====
+function startBattle(index) {
+  let e = aliveEnemies[index];
+  if (e.hp<=0) return;
+  battle = { enemy:e, enemyIndex:index, defending:false, xpGained:e.xp, lootName:e.loot, lootChance:0.4, silverGained:e.silver };
+  battleTurn = 'player'; battleTime = 10;
+  document.getElementById('battleFull').classList.add('active');
+  updateBattleUI(); startBattleTimer();
+}
+
+function updateBattleUI() {
+  document.getElementById('bPlayerName').innerText = nickname || 'Вы';
+  document.getElementById('bPlayerHP').innerText = player.hp+'/'+player.maxHp;
+  document.getElementById('bEnemyName').innerText = battle.enemy.name+' ['+battle.enemy.level+']';
+  document.getElementById('bEnemyHP').innerText = battle.enemy.hp+'/'+battle.enemy.maxHp;
+  document.getElementById('battleLog').innerHTML = '<p>⚔️ Бой начался!</p>';
+}
+
+function startBattleTimer() {
+  clearInterval(battleTimer);
+  battleTimer = setInterval(() => {
+    battleTime--;
+    let pct = battleTime/10*100;
+    document.getElementById('bPlayerTimer').style.width = (battleTurn==='player'?pct:0)+'%';
+    document.getElementById('bEnemyTimer').style.width = (battleTurn==='enemy'?pct:0)+'%';
+    if (battleTime <= 0) { clearInterval(battleTimer); if (battleTurn==='player') { battleLog('Время вышло!'); switchTurn(); } else enemyTurn(); }
+  }, 1000);
+}
+
+function battleAction(act) {
+  if (battleTurn!=='player') return;
+  clearInterval(battleTimer);
+  if (act==='attack') {
+    let dmg = Math.max(1, player.strength+Math.floor(Math.random()*5)-battle.enemy.def);
+    battle.enemy.hp -= dmg;
+    battleLog(`Вы атакуете: -${dmg} HP.`);
+    document.getElementById('bEnemyHP').innerText = battle.enemy.hp+'/'+battle.enemy.maxHp;
+  } else if (act==='skill1') {
+    if (player.mana<5) { battleLog('Недостаточно маны (5).'); startBattleTimer(); return; }
+    player.mana-=5;
+    let dmg = Math.max(1, Math.floor(player.strength*1.8)-battle.enemy.def);
+    battle.enemy.hp -= dmg;
+    battleLog(`💥 Усиленный удар! -${dmg} HP.`);
+    document.getElementById('bEnemyHP').innerText = battle.enemy.hp+'/'+battle.enemy.maxHp;
+    document.getElementById('skillPopup').style.display='none'; skillPopupOpen=false;
   }
+  if (battle.enemy.hp<=0) { showBattleResult(true); return; }
+  switchTurn();
 }
 
 function enemyTurn() {
-  if (!battleState) return;
-  let alive = battleState.enemies.filter(e => e.hp > 0);
-  if (alive.length === 0) { checkBattleEnd(); return; }
+  let dmg = Math.max(1, battle.enemy.atk+Math.floor(Math.random()*4));
+  if (battle.defending) { dmg=Math.floor(dmg/2); battle.defending=false; }
+  player.hp -= dmg;
+  document.getElementById('bPlayerHP').innerText = player.hp+'/'+player.maxHp;
+  battleLog(`${battle.enemy.name} атакует: -${dmg} HP.`);
+  if (player.hp<=0) { player.hp=0; showBattleResult(false); return; }
+  switchTurn();
+}
 
-  for (let enemy of alive) {
-    let rawDmg = Math.floor(Math.random() * enemy.attack) + 1;
-    let dmg = Math.max(1, rawDmg - getDefense());
-    if (battleState.playerDefending) dmg = Math.floor(dmg * 0.5);
-    player.hp -= dmg;
-    addLog(`👊 ${enemy.name} атакует на ${dmg} урона.`, 'dmg-flash');
-    if (player.hp <= 0) {
-      player.hp = 0;
-      addLog("💀 ТЫ ПОГИБ!", 'dmg-flash');
-      playerDeath();
-      return;
-    }
+function switchTurn() { battleTurn = battleTurn==='player'?'enemy':'player'; battleTime=10; startBattleTimer(); if (battleTurn==='enemy') setTimeout(enemyTurn,1500); }
+function battleLog(msg) { let p=document.createElement('p'); p.innerText=msg; document.getElementById('battleLog').appendChild(p); document.getElementById('battleLog').scrollTop=document.getElementById('battleLog').scrollHeight; }
+function toggleSkillPopup() { skillPopupOpen=!skillPopupOpen; document.getElementById('skillPopup').style.display=skillPopupOpen?'block':'none'; }
+
+function showBattleResult(win) {
+  clearInterval(battleTimer);
+  document.getElementById('battleFull').classList.remove('active');
+  document.getElementById('battleResult').classList.add('active');
+  document.getElementById('resultTitle').innerText = win ? 'Вы победили!' : 'Вы погибли.';
+  if (win) {
+    document.getElementById('resultXp').innerText = `Опыт: +${battle.enemy.xp}`;
+    let looted = Math.random() < battle.lootChance;
+    document.getElementById('resultLoot').innerText = looted ? `Добыча: ${battle.lootName}` : 'Добыча: ничего не выпало';
+    if (looted) inventory.push({name:battle.lootName,type:'loot'});
+    player.exp += battle.enemy.xp;
+    player.silver += battle.enemy.silver;
+    levelUp();
+    aliveEnemies[battle.enemyIndex].hp = 0;
+  } else {
+    document.getElementById('resultXp').innerText = '';
+    document.getElementById('resultLoot').innerText = '';
+    player.hp = Math.floor(player.maxHp*0.2);
   }
+  battle = null;
+}
 
-  battleState.turn = 'player';
+function closeBattleResult() {
+  document.getElementById('battleResult').classList.remove('active');
+  if (currentLocation==='glade') renderEnemies();
   updateUI();
 }
 
-function checkBattleEnd() {
-    if (!battleState) return;
-  let alive = battleState.enemies.filter(e => e.hp > 0);
-  if (alive.length === 0) {
-    addLog("🎉 ПОБЕДА!", 'loot-flash');
-    let xpGain = battleState.enemies.reduce((s, e) => s + e.xp, 0);
-    let goldGain = battleState.enemies.reduce((s, e) => s + e.gold, 0);
-    player.exp += xpGain;
-    player.gold += goldGain;
-    addLog(`⭐ +${xpGain} XP | 💰 +${goldGain} золота.`);
-
-    while (player.exp >= player.expToNext) {
-      player.exp -= player.expToNext;
-      player.level++;
-      player.expToNext = Math.floor(player.expToNext * 1.4);
-      player.maxHp += 10;
-      player.hp = player.maxHp;
-      player.strength += 2;
-      player.agility += 1;
-      player.intelligence += 1;
-      addLog(`⬆️ УРОВЕНЬ ${player.level}!`, 'loot-flash');
-    }
-
-    if (Math.random() < 0.5) {
-      let item = generateRandomItem(false);
-      inventory.push(item);
-      addLog(`📦 Добыча: <b>${item.name}</b>`, 'rare-flash');
-    }
-
-    locationData.visitedNodes.push(locationData.currentNode);
-    battleState = null;
-    document.getElementById('battleScreen').classList.remove('active');
-    updateUI();
-  }
+function levelUp() {
+  while (player.exp >= player.expToNext) { player.exp-=player.expToNext; player.level++; player.expToNext=Math.floor(player.expToNext*1.4); player.statPoints+=2; }
 }
 
-function playerDeath() {
-  locationData.currentNode = 0;
-  player.hp = Math.floor(player.maxHp * 0.1);
-  player.gold = Math.floor(player.gold * 0.8);
-  battleState = null;
-  document.getElementById('battleScreen').classList.remove('active');
-  updateUI();
-  addLog("🔄 Ты очнулся в лагере. HP восстановлено до 10%, золото потеряно на 20%.");
-}
+// ===== NPC =====
+function openNpcChat() { document.getElementById('npcName').innerText='Стражник'; document.getElementById('npcText').innerText='«Будь осторожен там, за воротами.»'; document.getElementById('npcModal').classList.add('active'); }
+function closeNpcChat() { document.getElementById('npcModal').classList.remove('active'); }
 
-// ==================== ПРЕДМЕТЫ ====================
-function generateRandomItem(rare) {
-  let pool = [
-    { name: "Меч", type: "weapon", slot: "weapon", weight: 5, bonus: { strength: 3 }, icon: "🗡️" },
-    { name: "Кинжал", type: "weapon", slot: "weapon", weight: 2, bonus: { strength: 1, agility: 2 }, icon: "🔪" },
-    { name: "Посох", type: "weapon", slot: "weapon", weight: 4, bonus: { intelligence: 4 }, icon: "🪄" },
-    { name: "Шлем", type: "armor", slot: "head", weight: 3, bonus: { defense: 2 }, icon: "🪖" },
-    { name: "Кираса", type: "armor", slot: "chest", weight: 8, bonus: { defense: 5 }, icon: "🛡️" },
-    { name: "Перчатки", type: "armor", slot: "gloves", weight: 2, bonus: { defense: 1, strength: 1 }, icon: "🧤" },
-    { name: "Сапоги", type: "armor", slot: "boots", weight: 3, bonus: { defense: 1, agility: 2 }, icon: "👢" },
-    { name: "Кольцо силы", type: "accessory", slot: "accessory", weight: 1, bonus: { strength: 3 }, icon: "💍" },
-    { name: "Кольцо ловкости", type: "accessory", slot: "accessory", weight: 1, bonus: { agility: 3 }, icon: "💍" },
-    { name: "Зелье здоровья", type: "consumable", weight: 1, heal: 25, icon: "🧪" },
-    { name: "Эликсир маны", type: "consumable", weight: 1, heal: 10, icon: "⚗️" },
-  ];
-  return { ...pool[Math.floor(Math.random() * pool.length)], id: Date.now() + Math.random() };
-}
-
-// ==================== ИНВЕНТАРЬ (UI) ====================
-function openInv() {
-  closeAll();
-  renderInvGrid();
-  document.getElementById('invModal').classList.add('open');
-  document.getElementById('overlay').classList.add('show');
-}
-
-function renderInvGrid() {
-  let grid = document.getElementById('invGrid');
-  let html = '';
-  for (let i = 0; i < 24; i++) {
-    if (i < inventory.length) {
-      let item = inventory[i];
-      html += `<div class="inv-cell" onclick="selectItem(${i})">${item.icon || '📦'}<br>${item.name.substring(0,6)}</div>`;
-    } else {
-      html += `<div class="inv-cell empty">-</div>`;
-    }
-  }
-  grid.innerHTML = html;
-  document.getElementById('curWeight').innerText = getTotalWeight();
-  document.getElementById('weightWarn').style.display = isOverweight() ? 'block' : 'none';
-}
-
-function selectItem(index) {
-  selectedItemIndex = index;
-  let item = inventory[index];
-  document.getElementById('itemModalName').innerText = item.icon + ' ' + item.name;
-  document.getElementById('itemModalDesc').innerText =
-    `Тип: ${item.type} | Вес: ${item.weight} кг` +
-    (item.bonus ? ` | Бонусы: ${JSON.stringify(item.bonus)}` : '') +
-    (item.heal ? ` | Лечение: ${item.heal} HP` : '');
-
-  document.getElementById('itemEquipBtn').style.display = (item.type === 'weapon' || item.type === 'armor' || item.type === 'accessory') ? 'block' : 'none';
-  document.getElementById('itemUseBtn').style.display = (item.type === 'consumable') ? 'block' : 'none';
-
-  document.getElementById('itemModal').classList.add('open');
-  document.getElementById('overlay').classList.add('show');
-}
-
-function equipSelected() {
-  if (selectedItemIndex === null) return;
-  let item = inventory[selectedItemIndex];
-  if (!item.slot) return;
-
-  if (equipped[item.slot]) {
-    inventory.push(equipped[item.slot]);
-  }
-  equipped[item.slot] = item;
-  inventory.splice(selectedItemIndex, 1);
-
-  addLog(`✅ ${item.name} экипирован в слот ${item.slot}.`);
-  closeItemModal();
-  renderInvGrid();
-  updateUI();
-}
-
-function useSelected() {
-  if (selectedItemIndex === null) return;
-  let item = inventory[selectedItemIndex];
-  if (item.heal) {
-    player.hp = Math.min(player.maxHp, player.hp + item.heal);
-    addLog(`🧪 Использовано: ${item.name}. +${item.heal} HP.`, 'heal-flash');
-  }
-  inventory.splice(selectedItemIndex, 1);
-  closeItemModal();
-  renderInvGrid();
-  updateUI();
-}
-
-function dropSelected() {
-  if (selectedItemIndex === null) return;
-  let item = inventory[selectedItemIndex];
-  inventory.splice(selectedItemIndex, 1);
-  addLog(`🗑️ Выброшено: ${item.name}.`);
-  closeItemModal();
-  renderInvGrid();
-  updateUI();
-}
-
-function unequip(slot) {
-  if (!equipped[slot]) return;
-  inventory.push(equipped[slot]);
-  addLog(`⬇️ Снято: ${equipped[slot].name} со слота ${slot}.`);
-  equipped[slot] = null;
-  updateUI();
-}
-
-function closeItemModal() {
-  document.getElementById('itemModal').classList.remove('open');
-  selectedItemIndex = null;
-}
-
-// ==================== ХАРАКТЕРИСТИКИ ====================
-function openStats() {
-  closeAll();
-  let c = document.getElementById('statsContent');
-  c.innerHTML = `
-    <p>💀 Уровень: <b>${player.level}</b> | XP: <b>${player.exp}/${player.expToNext}</b></p>
-    <p>❤️ HP: <b>${player.hp}/${player.maxHp}</b></p>
-    <p>⚔️ Сила: <b>${player.strength}</b> (+${getEquipBonus('strength')} от экип.)</p>
-    <p>💨 Ловкость: <b>${player.agility}</b> (+${getEquipBonus('agility')} от экип.)</p>
-    <p>🧠 Интеллект: <b>${player.intelligence}</b> (+${getEquipBonus('intelligence')} от экип.)</p>
-    <p>🛡️ Защита (броня): <b>${getDefense()}</b></p>
-    <p>⚡ Скорость: <b>${getSpeed()}</b></p>
-    <p>💰 Золото: <b>${player.gold}</b></p>
-    <p>🏋️ Вес: <b>${getTotalWeight()}/50 кг</b></p>
-  `;
-  document.getElementById('statsModal').classList.add('open');
-  document.getElementById('overlay').classList.add('show');
-}
-
-// ==================== МЕНЮ ====================
-function toggleMenu() {
-  document.getElementById('sideMenu').classList.toggle('open');
-  document.getElementById('overlay').classList.toggle('show');
-}
-
+// ===== МЕНЮ =====
+function toggleMenu() { document.getElementById('sideMenu').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show'); }
+function closeMenuGoLocation() { closeAll(); renderLocation(); }
+function closeFullscreen(id) { document.getElementById(id).classList.remove('active'); }
 function closeAll() {
   document.getElementById('sideMenu').classList.remove('open');
   document.getElementById('overlay').classList.remove('show');
-  document.getElementById('invModal').classList.remove('open');
-  document.getElementById('itemModal').classList.remove('open');
-  document.getElementById('statsModal').classList.remove('open');
-  selectedItemIndex = null;
+  document.querySelectorAll('.fullscreen').forEach(m=>m.classList.remove('active'));
+  document.getElementById('npcModal').classList.remove('active');
 }
 
-// ==================== СОХРАНЕНИЕ ====================
-function saveGame() {
-  let data = {
-    player,
-    inventory,
-    equipped,
-    location: locationData
-  };
-  localStorage.setItem('hardcoreGrindSave', JSON.stringify(data));
+// ===== ПЕРСОНАЖ =====
+function openStats() {
+  closeAll();
+  document.getElementById('equipSlots').innerHTML = ['Голова','Торс','Оружие','Перчатки','Ботинки','Кольцо'].map(s=>`<div class="equip-slot-mini">${s}</div>`).join('');
+  document.getElementById('statPoints').innerText = player.statPoints;
+  let names = {strength:'Сила',agility:'Ловкость',endurance:'Выносливость',intuition:'Интуиция',wisdom:'Мудрость',luck:'Удача'};
+  let html = '';
+  for (let k in names) html += `<div class="stat-row"><span>${names[k]}: <b>${player[k]}</b></span><button onclick="addStat('${k}')" ${player.statPoints<=0?'disabled':''}>+</button></div>`;
+  document.getElementById('statsList').innerHTML = html;
+  document.getElementById('statsScreen').classList.add('active');
+}
+function addStat(s) {
+  if (player.statPoints<=0) return;
+  player.statPoints--; player[s]++;
+  if (s==='endurance') { player.maxHp+=5; player.hp+=5; }
+  else { player.maxHp+=2; player.hp=Math.min(player.maxHp,player.hp+2); }
+  openStats(); updateUI();
 }
 
-function loadGame() {
-  let raw = localStorage.getItem('hardcoreGrindSave');
-  if (!raw) return;
-  try {
-    let data = JSON.parse(raw);
-    player = data.player;
-    inventory = data.inventory || [];
-    equipped = data.equipped || { head: null, chest: null, weapon: null, gloves: null, boots: null, accessory: null };
-    locationData = data.location;
-  } catch(e) {}
+// ===== УМЕНИЯ =====
+function openSkills() {
+  closeAll();
+  let html = '';
+  if (player.level < 5) { html = '<p style="color:#888;">Умения откроются на 5 уровне.</p>'; }
+  else { html = '<p><b>Усиленный удар</b> — изучено (5 маны)</p><p style="color:#888;">Другие умения пока недоступны.</p>'; }
+  document.getElementById('skillsContent').innerHTML = html;
+  document.getElementById('skillsScreen').classList.add('active');
 }
 
-// ==================== СТАРТ ====================
-loadGame();
-renderNodes();
-updateUI();
-addLog("🏕️ Лагерь. Начинай фарм: нажимай на соседние узлы.");
-addLog("💡 Совет: враги ходят по очерёдности (скорость). Защита снижает урон вдвое.");
-// ==================== АККАУНТ ====================
-let currentUser = null;
-let authMode = 'login';
+// ===== ИНВЕНТАРЬ =====
+function openInv() {
+  closeAll();
+  document.getElementById('invUsed').innerText = inventory.length;
+  document.getElementById('invSilver').innerText = player.silver;
+  let html = '';
+  if (inventory.length === 0) html = '<p style="color:#888;">Инвентарь пуст.</p>';
+  else inventory.forEach(item => { html += `<div class="inv-row"><span class="inv-name">${item.name}</span><span class="inv-info">${item.type||''}</span></div>`; });
+  document.getElementById('invList').innerHTML = html;
+  document.getElementById('invScreen').classList.add('active');
+}
 
+// ===== ЗАДАНИЯ =====
+function openQuests() { closeAll(); document.getElementById('questsScreen').classList.add('active'); }
+
+// ===== ДРУЗЬЯ =====
+function openFriends() { closeAll(); renderFriends(); document.getElementById('friendsScreen').classList.add('active'); }
+function sendFriendRequest() {
+  let nick = document.getElementById('friendSearch').value.trim();
+  if (!nick) return;
+  db.collection('friendRequests').add({from:nickname,to:nick,time:new Date()});
+  alert('Запрос отправлен!');
+}
+function renderFriends() {
+  db.collection('friendRequests').where('to','==',nickname).get().then(snap=>{
+    let html = '';
+    snap.forEach(doc=>{ html += `<div class="friend-row"><span>${doc.data().from}</span><button class="btn" style="width:auto;">Принять</button></div>`; });
+    document.getElementById('friendsList').innerHTML = html || '<p style="color:#888;">Заявок нет.</p>';
+  });
+}
+
+// ===== АККАУНТ =====
+function openAccount() { closeAll(); document.getElementById('accountNick').innerText = nickname; document.getElementById('newNick').value=''; document.getElementById('accountScreen').classList.add('active'); }
+function changeNick() {
+  let n = document.getElementById('newNick').value.trim();
+  if (!n) return;
+  nickname = n;
+  if (currentUser) db.collection('users').doc(currentUser.uid).set({nickname:n,email:currentUser.email},{merge:true});
+  updateUI(); closeAll();
+}
+
+// ===== ЧАТ (50 сообщений) =====
+function toggleChat() { chatOpen=!chatOpen; document.getElementById('chatBody').classList.toggle('open',chatOpen); }
+function sendMessage() {
+  if (!currentUser) return;
+  let text = document.getElementById('chatInput').value.trim();
+  if (!text) return;
+  db.collection('chat').add({nickname:nickname,text:text,time:new Date()});
+  document.getElementById('chatInput').value = '';
+}
+function loadChat() {
+  db.collection('chat').orderBy('time','asc').onSnapshot(snap => {
+    let messages = [];
+    snap.forEach(doc => messages.push(doc));
+    if (messages.length > 50) {
+      let toDelete = messages.slice(0, messages.length - 50);
+      toDelete.forEach(doc => doc.ref.delete());
+    }
+    let recent = messages.slice(-50);
+    let html = '';
+    recent.forEach(doc => { let d=doc.data(); html += `<p><b>${d.nickname}:</b> ${d.text}</p>`; });
+    document.getElementById('chatMessages').innerHTML = html;
+    document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+  });
+}
+
+// ===== ОНЛАЙН =====
+db.collection('online').onSnapshot(snap => { document.getElementById('menuOnline').innerText = snap.size; });
+
+// ===== АВТОРИЗАЦИЯ =====
 auth.onAuthStateChanged(user => {
   currentUser = user;
   if (user) {
-    updateOnlineStatus(user);
-    document.getElementById('btnLogin').style.display = 'none';
-    document.getElementById('btnRegister').style.display = 'none';
-    document.getElementById('btnLogout').style.display = 'block';
-    document.getElementById('authMsg').innerText = '👤 ' + user.email;
-    document.getElementById('chatArea').style.display = 'block';
-    document.getElementById('onlineArea').style.display = 'block';
-    loadChat();
-  } else {
-    document.getElementById('btnLogin').style.display = 'block';
-    document.getElementById('btnRegister').style.display = 'block';
-    document.getElementById('btnLogout').style.display = 'none';
-    document.getElementById('authMsg').innerText = '';
-    document.getElementById('chatArea').style.display = 'none';
-    document.getElementById('onlineArea').style.display = 'none';
-  }
-});
-function showLogin() {
-  authMode = 'login';
-  document.getElementById('authTitle').innerText = 'Вход';
-  document.getElementById('authPass2').style.display = 'none';
-  document.getElementById('authSubmit').innerText = 'Войти';
-  document.getElementById('authError').style.display = 'none';
-  document.getElementById('authModal').classList.add('open');
-  document.getElementById('overlay').classList.add('show');
-}
-
-function showRegister() {
-  authMode = 'register';
-  document.getElementById('authTitle').innerText = 'Регистрация';
-  document.getElementById('authPass2').style.display = 'block';
-  document.getElementById('authSubmit').innerText = 'Создать аккаунт';
-  document.getElementById('authError').style.display = 'none';
-  document.getElementById('authModal').classList.add('open');
-  document.getElementById('overlay').classList.add('show');
-}
-
-function handleAuth() {
-  let email = document.getElementById('authEmail').value.trim();
-  let pass = document.getElementById('authPass').value;
-  let pass2 = document.getElementById('authPass2').value;
-  let errEl = document.getElementById('authError');
-
-  if (!email || !pass) {
-    errEl.innerText = 'Заполни все поля';
-    errEl.style.display = 'block';
-    return;
-  }
-
-  if (authMode === 'register') {
-    if (pass !== pass2) {
-      errEl.innerText = 'Пароли не совпадают';
-      errEl.style.display = 'block';
-      return;
-    }
-    if (pass.length < 6) {
-      errEl.innerText = 'Пароль минимум 6 символов';
-      errEl.style.display = 'block';
-      return;
-    }
-    auth.createUserWithEmailAndPassword(email, pass)
-      .then(() => closeAuthModal())
-      .catch(e => { errEl.innerText = e.message; errEl.style.display = 'block'; });
-  } else {
-    auth.signInWithEmailAndPassword(email, pass)
-      .then(() => closeAuthModal())
-      .catch(e => { errEl.innerText = e.message; errEl.style.display = 'block'; });
-  }
-}
-
-function updateOnlineStatus(user) {
-  let userRef = db.collection('online').doc(user.uid);
-  userRef.set({
-    email: user.email,
-    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  window.addEventListener('beforeunload', () => {
-    userRef.delete();
-  });
-}
-
-// Слушаем онлайн-игроков
-db.collection('online').onSnapshot(snapshot => {
-  document.getElementById('onlineCount').innerText = snapshot.size;
-});
-
-// Удаляем отключившихся (старше 30 секунд)
-setInterval(() => {
-  let cutoff = new Date(Date.now() - 30000);
-  db.collection('online').where('lastSeen', '<', cutoff).get()
-    .then(snap => snap.forEach(doc => doc.ref.delete()));
-}, 15000);
-
-function logout() {
-  auth.signOut();
-}
-
-function closeAuthModal() {
-  document.getElementById('authModal').classList.remove('open');
-  document.getElementById('overlay').classList.remove('show');
-  document.getElementById('authEmail').value = '';
-  document.getElementById('authPass').value = '';
-  document.getElementById('authPass2').value = '';
-}
-
-// ==================== ЧАТ ====================
-function sendMessage() {
-  if (!currentUser) return;
-  let input = document.getElementById('chatInput');
-  let text = input.value.trim();
-  if (!text) return;
-  db.collection('chat').add({
-    email: currentUser.email,
-    text: text,
-    time: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  input.value = '';
-}
-
-function loadChat() {
-  db.collection('chat').orderBy('time', 'asc').limit(50)
-    .onSnapshot(snapshot => {
-      let html = '';
-      snapshot.forEach(doc => {
-        let d = doc.data();
-        html += `<p><b>${d.email.split('@')[0]}:</b> ${d.text}</p>`;
-      });
-      let el = document.getElementById('chatMessages');
-      el.innerHTML = html;
-      el.scrollTop = el.scrollHeight;
+    db.collection('users').doc(user.uid).get().then(doc => {
+      nickname = doc.exists ? doc.data().nickname : user.email.split('@')[0];
+      db.collection('online').doc(user.uid).set({nickname:nickname,lastSeen:new Date()});
+      db.collection('locations').doc(user.uid).set({location:currentLocation,nickname:nickname,lastSeen:new Date()});
+      updateUI(); loadChat(); renderLocation();
     });
-}
+  }
+});
+setInterval(() => {
+  if (currentUser) {
+    db.collection('online').doc(currentUser.uid).set({nickname:nickname,lastSeen:new Date()});
+    db.collection('locations').doc(currentUser.uid).set({location:currentLocation,nickname:nickname,lastSeen:new Date()});
+  }
+}, 20000);
+
+renderLocation(); updateUI();
 </script>
 </body>
 </html>
