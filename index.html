@@ -11,8 +11,7 @@ body {
   font-family: 'Segoe UI', Arial, sans-serif; font-weight: 300; font-size: 14px;
   max-width: 500px; margin: 0 auto; min-height: 100vh;
   border-left: 2px solid #e8e0d5; border-right: 2px solid #e8e0d5;
-  box-shadow: 0 0 30px rgba(0,0,0,0.05);
-  position: relative;
+  box-shadow: 0 0 30px rgba(0,0,0,0.05); position: relative;
 }
 
 #topbar {
@@ -65,7 +64,7 @@ body {
   border: 1px solid #e8e0d5; font-size: 12px; color: #555;
 }
 #playersHere b { color: #4a8; }
-#playersHere .player-nick {
+.player-nick {
   display: inline-block; background: #ede4d4; padding: 3px 8px; border-radius: 6px;
   margin: 2px; font-size: 11px; color: #444;
 }
@@ -78,12 +77,11 @@ body {
 }
 .loc-btn:active { background: #ede4d4; transform: scale(0.98); }
 #npcRow { display: flex; align-items: center; gap: 8px; margin: 6px 0; padding: 10px; background: #faf7f2; border-radius: 10px; }
-#npcRow button { padding: 6px 14px; background: #fefefe; border: 1px solid #d5cbb8; font-size: 12px; cursor: pointer; border-radius: 8px; transition: all 0.15s; }
+#npcRow button { padding: 6px 14px; background: #fefefe; border: 1px solid #d5cbb8; font-size: 12px; cursor: pointer; border-radius: 8px; }
 #enemyList { display: flex; flex-direction: column; gap: 5px; }
 .enemy-row {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px; background: #faf7f2; border: 1px solid #e0d8cc; border-radius: 10px;
-  transition: all 0.15s;
 }
 .enemy-row button { padding: 6px 14px; background: #fefefe; border: 1px solid #c44; color: #c44; border-radius: 8px; cursor: pointer; font-size: 12px; }
 
@@ -128,20 +126,17 @@ body {
 .fullscreen .back-btn {
   padding: 10px 16px; background: #faf7f2; border: 1px solid #d5cbb8;
   font-size: 13px; cursor: pointer; border-radius: 8px; margin-bottom: 16px; display: inline-block;
-  transition: all 0.15s;
 }
 .fullscreen .back-btn:active { background: #ede4d4; }
 .equip-slot-mini {
   border: 1px solid #d5cbb8; padding: 10px 6px; text-align: center; font-size: 10px;
-  border-radius: 8px; background: #faf7f2; cursor: pointer; transition: all 0.15s;
+  border-radius: 8px; background: #faf7f2;
 }
-.equip-slot-mini:active { background: #ede4d4; }
 .stat-row { display: flex; justify-content: space-between; padding: 8px 0; align-items: center; border-bottom: 1px solid #f0e8d8; }
 .stat-row button {
   width: 30px; height: 30px; background: #faf7f2; border: 1px solid #d5cbb8;
-  cursor: pointer; border-radius: 8px; font-size: 18px; transition: all 0.15s;
+  cursor: pointer; border-radius: 8px; font-size: 18px;
 }
-.stat-row button:active { background: #ede4d4; }
 .inv-row {
   display: flex; justify-content: space-between; align-items: center;
   padding: 12px; border-bottom: 1px solid #f0e8d8; background: #faf7f2;
@@ -152,8 +147,7 @@ body {
 .friend-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f0e8d8; }
 
 #chatBar { position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto; background: #fefefe; border-top: 2px solid #e0d8cc; z-index: 50; }
-#chatToggle { width: 100%; padding: 12px; background: #faf7f2; border: none; font-size: 13px; cursor: pointer; font-weight: 400; transition: all 0.15s; }
-#chatToggle:active { background: #ede4d4; }
+#chatToggle { width: 100%; padding: 12px; background: #faf7f2; border: none; font-size: 13px; cursor: pointer; font-weight: 400; }
 #chatBody { display: none; padding: 8px; }
 #chatBody.open { display: block; }
 #chatMessages { max-height: 100px; overflow-y: auto; font-size: 11px; margin-bottom: 6px; border: 1px solid #e0d8cc; padding: 6px; border-radius: 8px; background: #faf7f2; }
@@ -162,13 +156,40 @@ body {
 #chatInputRow button { padding: 10px 16px; background: #faf7f2; border: 1px solid #d5cbb8; cursor: pointer; border-radius: 8px; font-weight: 400; }
 
 input { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #d5cbb8; font-size: 13px; border-radius: 8px; }
-.btn { padding: 11px; margin: 4px 0; background: #faf7f2; border: 1px solid #d5cbb8; cursor: pointer; font-size: 13px; border-radius: 8px; width: 100%; transition: all 0.15s; font-weight: 400; }
+.btn { padding: 11px; margin: 4px 0; background: #faf7f2; border: 1px solid #d5cbb8; cursor: pointer; font-size: 13px; border-radius: 8px; width: 100%; }
 .btn:active { background: #ede4d4; }
+.error-msg { color: #c44; font-size: 12px; display: none; margin: 4px 0; }
 </style>
 </head>
 <body>
 
 <div id="overlay" onclick="closeAll()"></div>
+
+<!-- Регистрация -->
+<div id="registerScreen" class="fullscreen" style="z-index:400; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+  <h2 style="margin-bottom:20px;">Регистрация</h2>
+  <p style="color:#888;margin-bottom:16px;">Придумайте ник и пароль</p>
+  <input id="regNick" type="text" placeholder="Ник" style="max-width:300px;">
+  <p class="error-msg" id="regNickError">Этот ник уже занят</p>
+  <input id="regPass" type="password" placeholder="Пароль (мин. 6 символов)" style="max-width:300px;">
+  <input id="regPass2" type="password" placeholder="Повторите пароль" style="max-width:300px;">
+  <p class="error-msg" id="regError"></p>
+  <button class="btn" onclick="register()" style="max-width:300px;">Создать аккаунт</button>
+  <button class="btn" onclick="showLogin()" style="max-width:300px;color:#888;">Уже есть аккаунт? Войти</button>
+</div>
+
+<!-- Вход -->
+<div id="loginScreen" class="fullscreen" style="z-index:400; display:none; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
+  <h2 style="margin-bottom:20px;">Вход</h2>
+  <input id="loginNick" type="text" placeholder="Ник" style="max-width:300px;">
+  <input id="loginPass" type="password" placeholder="Пароль" style="max-width:300px;">
+  <p class="error-msg" id="loginError"></p>
+  <button class="btn" onclick="login()" style="max-width:300px;">Войти</button>
+  <button class="btn" onclick="showRegister()" style="max-width:300px;color:#888;">Нет аккаунта? Зарегистрироваться</button>
+</div>
+
+<!-- Игра (скрыта до входа) -->
+<div id="gameWrapper" style="display:none;">
 
 <div id="sideMenu">
   <div class="menu-profile">
@@ -182,6 +203,7 @@ input { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #d5cbb8; fo
   <button class="menu-item" onclick="openQuests()">📜 Задания</button>
   <button class="menu-item" onclick="openFriends()">👥 Друзья</button>
   <button class="menu-item" onclick="openAccount()">⚙️ Аккаунт</button>
+  <button class="menu-item" onclick="logout()">🚪 Выйти</button>
   <div class="menu-online">🟢 Онлайн: <b id="menuOnline">0</b></div>
 </div>
 
@@ -214,12 +236,14 @@ input { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #d5cbb8; fo
   <h2 id="resultTitle"></h2>
   <p id="resultXp"></p>
   <p id="resultLoot"></p>
+  <p id="resultSilver"></p>
   <button onclick="closeBattleResult()">Продолжить</button>
 </div>
 
 <div id="statsScreen" class="fullscreen">
   <div class="back-btn" onclick="closeFullscreen('statsScreen')">← Назад</div>
   <h2>Персонаж</h2>
+  <p style="color:#888;">Опыт: <b id="xpBar">0/50</b> | Уровень: <b id="lvlText">1</b></p>
   <div style="text-align:center;font-size:64px;">🧑</div>
   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0;" id="equipSlots"></div>
   <p style="color:#888;">Очков: <b id="statPoints">0</b></p>
@@ -260,6 +284,7 @@ input { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #d5cbb8; fo
   <h2>Аккаунт</h2>
   <p style="color:#888;">Текущий ник: <b id="accountNick"></b></p>
   <input id="newNick" type="text" placeholder="Новый ник">
+  <p class="error-msg" id="changeNickError">Этот ник уже занят</p>
   <button class="btn" onclick="changeNick()">Сохранить</button>
 </div>
 
@@ -305,6 +330,7 @@ input { width: 100%; padding: 10px; margin: 4px 0; border: 1px solid #d5cbb8; fo
   </div>
 </div>
 
+</div>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -330,25 +356,23 @@ let battle = null, battleTimer = null, battleTurn = 'player', battleTime = 10;
 let chatOpen = false, skillPopupOpen = false;
 
 const locations = {
-  center: { name:'Центр Города', desc:'Центр давно забытого города. Мощёная площадь, вокруг старые здания.', actions:[
+  center: { name:'Центр Города', desc:'Центр давно забытого города.', actions:[
     {text:'🏪 Рынок', go:'market'}, {text:'🏛️ Гильдии', go:'guild'}, {text:'🚪 К воротам', go:'gate'}
   ]},
-  market: { name:'Рынок', desc:'Торговые ряды. Пахнет специями и кожей.', actions:[{text:'⬅️ В центр', go:'center'}] },
-  guild: { name:'Гильдии', desc:'Величественное здание с четырьмя крыльями.', actions:[
-    {text:'⚔️ Гильдия воинов', go:'guild_warrior'},
-    {text:'🪄 Гильдия магов', go:'guild_mage'},
-    {text:'🏹 Гильдия охотников', go:'guild_hunter'},
-    {text:'🧘 Гильдия монахов', go:'guild_monk'},
+  market: { name:'Рынок', desc:'Торговые ряды.', actions:[{text:'⬅️ В центр', go:'center'}] },
+  guild: { name:'Гильдии', desc:'Здание с четырьмя крыльями.', actions:[
+    {text:'⚔️ Гильдия воинов', go:'guild_warrior'},{text:'🪄 Гильдия магов', go:'guild_mage'},
+    {text:'🏹 Гильдия охотников', go:'guild_hunter'},{text:'🧘 Гильдия монахов', go:'guild_monk'},
     {text:'⬅️ В центр', go:'center'}
   ]},
-  guild_warrior: { name:'Гильдия воинов', desc:'Зал славы, увешанный оружием. Здесь тренируются лучшие бойцы Азгранта.', actions:[{text:'⬅️ Назад', go:'guild'}] },
-  guild_mage: { name:'Гильдия магов', desc:'Башня, пропитанная магической энергией. Пахнет озоном и старыми книгами.', actions:[{text:'⬅️ Назад', go:'guild'}] },
-  guild_hunter: { name:'Гильдия охотников', desc:'Охотничий зал с трофеями на стенах. Здесь учат выживать в дикой местности.', actions:[{text:'⬅️ Назад', go:'guild'}] },
-  guild_monk: { name:'Гильдия монахов', desc:'Тихое убежище для размышлений. Монахи практикуют дисциплину духа и тела.', actions:[{text:'⬅️ Назад', go:'guild'}] },
-  gate: { name:'Ворота Города', desc:'Ворота города Азгрант. Дальше — неизвестность.', actions:[
-    {text:'⬅️ В центр', go:'center'}, {text:'🌿 Выйти на поляну', go:'glade'}
+  guild_warrior: { name:'Гильдия воинов', desc:'Зал славы, увешанный оружием.', actions:[{text:'⬅️ Назад', go:'guild'}] },
+  guild_mage: { name:'Гильдия магов', desc:'Башня, пропитанная магией.', actions:[{text:'⬅️ Назад', go:'guild'}] },
+  guild_hunter: { name:'Гильдия охотников', desc:'Зал с трофеями.', actions:[{text:'⬅️ Назад', go:'guild'}] },
+  guild_monk: { name:'Гильдия монахов', desc:'Тихое убежище.', actions:[{text:'⬅️ Назад', go:'guild'}] },
+  gate: { name:'Ворота Города', desc:'Ворота Азгранта.', actions:[
+    {text:'⬅️ В центр', go:'center'}, {text:'🌿 На поляну', go:'glade'}
   ], npc:'guard'},
-  glade: { name:'Поляна', desc:'Тихая поляна. Слышно шуршание.', actions:[{text:'🚪 К воротам', go:'gate'}], enemies:true },
+  glade: { name:'Поляна', desc:'Тихая поляна.', actions:[{text:'🚪 К воротам', go:'gate'}], enemies:true },
 };
 
 const gladeEnemies = [
@@ -357,6 +381,81 @@ const gladeEnemies = [
 ];
 let aliveEnemies = [];
 
+// ===== РЕГИСТРАЦИЯ / ВХОД =====
+function showRegister() {
+  document.getElementById('registerScreen').style.display = 'flex';
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('gameWrapper').style.display = 'none';
+}
+function showLogin() {
+  document.getElementById('registerScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('gameWrapper').style.display = 'none';
+}
+
+async function register() {
+  let nick = document.getElementById('regNick').value.trim();
+  let pass = document.getElementById('regPass').value;
+  let pass2 = document.getElementById('regPass2').value;
+  document.getElementById('regError').style.display = 'none';
+  document.getElementById('regNickError').style.display = 'none';
+
+  if (!nick || !pass) { showErr('regError','Заполни все поля'); return; }
+  if (pass.length < 6) { showErr('regError','Пароль минимум 6 символов'); return; }
+  if (pass !== pass2) { showErr('regError','Пароли не совпадают'); return; }
+
+  // Проверка ника
+  let snap = await db.collection('users').where('nickname','==',nick).get();
+  if (!snap.empty) { showErr('regNickError','Этот ник уже занят'); return; }
+
+  let email = nick + '@azgrant.game';
+  auth.createUserWithEmailAndPassword(email, pass).then(u => {
+    return db.collection('users').doc(u.user.uid).set({nickname:nick,email:email});
+  }).then(() => {
+    nickname = nick;
+    enterGame();
+  }).catch(e => { showErr('regError',e.message); });
+}
+
+async function login() {
+  let nick = document.getElementById('loginNick').value.trim();
+  let pass = document.getElementById('loginPass').value;
+  document.getElementById('loginError').style.display = 'none';
+  if (!nick || !pass) { showErr('loginError','Заполни все поля'); return; }
+  let email = nick + '@azgrant.game';
+  auth.signInWithEmailAndPassword(email, pass).then(() => {
+    nickname = nick;
+    enterGame();
+  }).catch(e => { showErr('loginError','Неверный ник или пароль'); });
+}
+
+function logout() {
+  auth.signOut();
+  nickname = '';
+  document.getElementById('gameWrapper').style.display = 'none';
+  showRegister();
+}
+
+function showErr(id, msg) {
+  let el = document.getElementById(id);
+  el.innerText = msg;
+  el.style.display = 'block';
+}
+
+function enterGame() {
+  document.getElementById('registerScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('gameWrapper').style.display = 'block';
+  if (currentUser) {
+    db.collection('online').doc(currentUser.uid).set({nickname:nickname,lastSeen:new Date()});
+    db.collection('locations').doc(currentUser.uid).set({location:currentLocation,nickname:nickname,lastSeen:new Date()});
+  }
+  loadChat();
+  renderLocation();
+  updateUI();
+}
+
+// ===== ИГРА =====
 function renderLocation() {
   let loc = locations[currentLocation];
   document.getElementById('locName').innerText = loc.name;
@@ -375,7 +474,7 @@ function goTo(loc) {
   currentLocation = loc;
   battle = null; clearInterval(battleTimer);
   document.getElementById('battleFull').classList.remove('active');
-  if (currentUser) db.collection('locations').doc(currentUser.uid).set({location:loc, nickname:nickname, lastSeen:new Date()});
+  if (currentUser) db.collection('locations').doc(currentUser.uid).set({location:loc,nickname:nickname,lastSeen:new Date()});
   renderLocation();
 }
 
@@ -394,21 +493,19 @@ function loadPlayersHere() {
     let nicks = [];
     snap.forEach(doc => { let d=doc.data(); if (d.nickname && d.nickname !== nickname) nicks.push(d.nickname); });
     let el = document.getElementById('playersHere');
-    if (nicks.length > 0) {
-      el.innerHTML = `Игроки здесь: <b>${nicks.length}</b><br>${nicks.map(n=>`<span class="player-nick">${n}</span>`).join(' ')}`;
-    } else {
-      el.innerHTML = 'Игроки здесь: <b>0</b>';
-    }
+    if (nicks.length > 0) el.innerHTML = `Игроки здесь: <b>${nicks.length}</b><br>${nicks.map(n=>`<span class="player-nick">${n}</span>`).join(' ')}`;
+    else el.innerHTML = 'Игроки здесь: <b>0</b>';
   });
 }
 
 function updateUI() {
   document.getElementById('topHP').innerText = player.hp;
   document.getElementById('topMana').innerText = player.mana;
-  document.getElementById('topInv').innerText = inventory.
-       document.getElementById('topInv').innerText = inventory.length;
+  document.getElementById('topInv').innerText = inventory.length;
   document.getElementById('menuNick').innerText = nickname || 'Игрок';
   document.getElementById('menuClass').innerText = player.charClass + ' · Ур. ' + player.level;
+  document.getElementById('xpBar').innerText = player.exp+'/'+player.expToNext;
+  document.getElementById('lvlText').innerText = player.level;
 }
 
 // ===== БОЙ =====
@@ -484,6 +581,7 @@ function showBattleResult(win) {
     document.getElementById('resultXp').innerText = `Опыт: +${battle.enemy.xp}`;
     let looted = Math.random() < battle.lootChance;
     document.getElementById('resultLoot').innerText = looted ? `Добыча: ${battle.lootName}` : 'Добыча: ничего не выпало';
+    document.getElementById('resultSilver').innerText = `Серебро: +${battle.enemy.silver}`;
     if (looted) inventory.push({name:battle.lootName,type:'loot'});
     player.exp += battle.enemy.xp;
     player.silver += battle.enemy.silver;
@@ -492,6 +590,7 @@ function showBattleResult(win) {
   } else {
     document.getElementById('resultXp').innerText = '';
     document.getElementById('resultLoot').innerText = '';
+    document.getElementById('resultSilver').innerText = '';
     player.hp = Math.floor(player.maxHp*0.2);
   }
   battle = null;
@@ -504,7 +603,12 @@ function closeBattleResult() {
 }
 
 function levelUp() {
-  while (player.exp >= player.expToNext) { player.exp-=player.expToNext; player.level++; player.expToNext=Math.floor(player.expToNext*1.4); player.statPoints+=2; }
+  while (player.exp >= player.expToNext) {
+    player.exp -= player.expToNext;
+    player.level++;
+    player.expToNext = Math.floor(player.expToNext*1.4);
+    player.statPoints += 2;
+  }
 }
 
 // ===== NPC =====
@@ -581,18 +685,21 @@ function renderFriends() {
     document.getElementById('friendsList').innerHTML = html || '<p style="color:#888;">Заявок нет.</p>';
   });
 }
-
-// ===== АККАУНТ =====
-function openAccount() { closeAll(); document.getElementById('accountNick').innerText = nickname; document.getElementById('newNick').value=''; document.getElementById('accountScreen').classList.add('active'); }
-function changeNick() {
+// ===== АККАУНТ (смена ника с проверкой) =====
+function openAccount() { closeAll(); document.getElementById('accountNick').innerText = nickname; document.getElementById('newNick').value=''; document.getElementById('changeNickError').style.display='none'; document.getElementById('accountScreen').classList.add('active'); }
+async function changeNick() {
   let n = document.getElementById('newNick').value.trim();
+  document.getElementById('changeNickError').style.display = 'none';
   if (!n) return;
+  if (n === nickname) { closeAll(); return; }
+  let snap = await db.collection('users').where('nickname','==',n).get();
+  if (!snap.empty) { showErr('changeNickError','Этот ник уже занят'); return; }
   nickname = n;
   if (currentUser) db.collection('users').doc(currentUser.uid).set({nickname:n,email:currentUser.email},{merge:true});
   updateUI(); closeAll();
 }
 
-// ===== ЧАТ (50 сообщений) =====
+// ===== ЧАТ =====
 function toggleChat() { chatOpen=!chatOpen; document.getElementById('chatBody').classList.toggle('open',chatOpen); }
 function sendMessage() {
   if (!currentUser) return;
@@ -606,12 +713,10 @@ function loadChat() {
     let messages = [];
     snap.forEach(doc => messages.push(doc));
     if (messages.length > 50) {
-      let toDelete = messages.slice(0, messages.length - 50);
-      toDelete.forEach(doc => doc.ref.delete());
+      messages.slice(0, messages.length-50).forEach(doc => doc.ref.delete());
     }
-    let recent = messages.slice(-50);
     let html = '';
-    recent.forEach(doc => { let d=doc.data(); html += `<p><b>${d.nickname}:</b> ${d.text}</p>`; });
+    messages.slice(-50).forEach(doc => { let d=doc.data(); html += `<p><b>${d.nickname}:</b> ${d.text}</p>`; });
     document.getElementById('chatMessages').innerHTML = html;
     document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
   });
@@ -625,21 +730,23 @@ auth.onAuthStateChanged(user => {
   currentUser = user;
   if (user) {
     db.collection('users').doc(user.uid).get().then(doc => {
-      nickname = doc.exists ? doc.data().nickname : user.email.split('@')[0];
-      db.collection('online').doc(user.uid).set({nickname:nickname,lastSeen:new Date()});
-      db.collection('locations').doc(user.uid).set({location:currentLocation,nickname:nickname,lastSeen:new Date()});
-      updateUI(); loadChat(); renderLocation();
+      if (doc.exists) {
+        nickname = doc.data().nickname;
+        enterGame();
+      }
     });
+  } else {
+    document.getElementById('gameWrapper').style.display = 'none';
+    showRegister();
   }
 });
+
 setInterval(() => {
   if (currentUser) {
     db.collection('online').doc(currentUser.uid).set({nickname:nickname,lastSeen:new Date()});
     db.collection('locations').doc(currentUser.uid).set({location:currentLocation,nickname:nickname,lastSeen:new Date()});
   }
 }, 20000);
-
-renderLocation(); updateUI();
 </script>
 </body>
 </html>
