@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Код Этернитас</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Сюда будет рендериться весь интерфейс -->
+        <div id="loading">🌑 Загрузка Код Этернитас...</div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <!-- Файлы игры -->
+    <script src="firebase.js"></script>
+    <script src="auth.js"></script>
+    <script src="game.js"></script>
+    <script src="battle.js"></script>
+    <script src="road.js"></script>
+    <script src="city.js"></script>
+    <script src="auction.js"></script>
+    <script src="admin.js"></script>
+    <script src="chat.js"></script>
+
+    <script>
+        // Инициализация при загрузке
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('🌑 Код Этернитас запущен');
+        });
+    </script>
+</body>
+</html>
